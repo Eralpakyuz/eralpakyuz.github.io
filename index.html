@@ -13,21 +13,17 @@
   html{scroll-behavior:smooth}
   body{background:#000;color:var(--ink);font-family:'Archivo',sans-serif;overflow-x:hidden;line-height:1.6}
 
-  .stars{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .3s}
+  .stars{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .4s}
   .star{position:absolute;background:#fff;border-radius:50%;opacity:.6;animation:twinkle 3s infinite ease-in-out}
   @keyframes twinkle{0%,100%{opacity:.12}50%{opacity:.9}}
 
-  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--accent3),var(--accent2),var(--accent));z-index:120;transition:width .1s}
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--accent2),var(--accent),var(--accent3));z-index:120;transition:width .1s}
 
-  /* ===== VERTICAL SIDEBAR NAV ===== */
-  .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sb);z-index:110;
-    display:flex;flex-direction:column;align-items:center;justify-content:space-between;
-    padding:22px 0;background:rgba(5,6,15,.4);backdrop-filter:blur(10px);border-right:1px solid rgba(255,255,255,.08)}
+  /* SIDEBAR */
+  .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sb);z-index:110;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:22px 0;background:rgba(5,6,15,.35);backdrop-filter:blur(10px);border-right:1px solid rgba(255,255,255,.08)}
   .sb-logo{font-family:'Anton',sans-serif;font-size:1.3rem;color:#fff;text-decoration:none;letter-spacing:1px;mix-blend-mode:difference}
-  .sb-logo span{color:var(--accent3)}
   .sb-nav{display:flex;flex-direction:column;gap:1.5rem;align-items:center}
-  .sb-nav a{writing-mode:vertical-rl;transform:rotate(180deg);font-family:'DM Mono',monospace;font-size:.78rem;
-    letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:.25s;position:relative}
+  .sb-nav a{writing-mode:vertical-rl;transform:rotate(180deg);font-family:'DM Mono',monospace;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:.25s;position:relative}
   .sb-nav a:hover{color:var(--accent2)}
   .sb-nav a.active{color:#fff}
   .sb-nav a.active::after{content:"";position:absolute;left:-8px;top:0;bottom:0;width:3px;border-radius:3px;background:var(--accent)}
@@ -42,36 +38,30 @@
     .sb-nav.open{transform:none}
     .sb-nav a{writing-mode:horizontal-tb;transform:none;color:#ddd}
     .sb-nav a.active::after{display:none}
-    .sb-lang{flex-direction:row}
-    .sb-lang button{padding:.4rem .7rem;width:auto}
+    .sb-lang{flex-direction:row}.sb-lang button{padding:.4rem .7rem;width:auto}
     .sb-toggle{display:block;background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer}
   }
 
-  /* ===== ROCKET (climbs up as you scroll: earth->space) ===== */
-  .rocket{position:fixed;left:calc(var(--sb) + (100vw - var(--sb))*0.5);top:80vh;z-index:60;transform:translateX(-50%);transition:transform .12s linear;will-change:top,transform;filter:drop-shadow(0 0 18px rgba(255,180,120,.45))}
-  .rocket .trail{position:absolute;left:50%;top:100%;transform:translateX(-50%);width:5px;height:130px;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(120,180,255,.12),transparent);filter:blur(2px);opacity:.55}
-  @media(max-width:780px){.rocket{left:50%}}
+  /* ROCKET (fixed, JS-driven) — starts at right so it never covers the title */
+  .rocket{position:fixed;left:78%;top:50vh;z-index:60;transform:translateX(-50%);will-change:top,left,transform;filter:drop-shadow(0 0 18px rgba(255,180,120,.5))}
+  .rocket .trail{position:absolute;left:50%;top:100%;transform:translateX(-50%);width:5px;height:120px;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(120,180,255,.12),transparent);filter:blur(2px);opacity:.6}
+  @media(max-width:780px){.rocket{left:82%}}
 
   .main{margin-left:var(--sb);position:relative;z-index:3}
   @media(max-width:780px){.main{margin-left:0;padding-top:54px}}
-  section{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:10vh 7vw;position:relative}
+  .panel{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:10vh 7vw;position:relative}
 
-  /* ===== Atmospheric color layers: TOP = daylight/earth, BOTTOM = deep space ===== */
-  /* Hero: daylight sky blue */
-  #hero{background:linear-gradient(180deg,#acd6f5 0%,#9fc6ec 60%,#bcd2e8 100%)}
-  /* Childhood scene wrapper handles its own gradient below */
-  /* Awakening: powder pink -> pink */
-  #s-awaken{background:linear-gradient(180deg,#f0c8d2 0%,#e89ab0 55%,#c24a82 100%)}
-  /* School: pink -> deep purple */
-  #okul{background:linear-gradient(180deg,#c24a82 0%,#8a2a6e 55%,#5a1a64 100%)}
-  /* Skills/Interests: deep purple -> dark purple */
-  #ilgi{background:linear-gradient(180deg,#5a1a64 0%,#3a1450 55%,#2a0f4e 100%)}
-  /* Projects: dark purple -> navy */
-  #projeler{background:linear-gradient(180deg,#2a0f4e 0%,#1a1042 55%,#0a1430 100%)}
+  /* Color layers chained so each section's bottom == next section's top (no hard jumps) */
+  #hero{background:linear-gradient(180deg,#cfe9fc 0%,#bfe0fb 45%,#aed6f4 100%)}
+  /* horizontal panes continue from #aed6f4 ... to #93bce8 (set on panes below) */
+  #s-awaken{background:linear-gradient(180deg,#93bce8 0%,#86aadd 50%,#7596cf 100%)}
+  #s-school{background:linear-gradient(180deg,#7596cf 0%,#6178bd 50%,#4f5aa6 100%)}
+  #s-skills{background:linear-gradient(180deg,#4f5aa6 0%,#41407f 50%,#33245e 100%)}
+  #s-projects{background:linear-gradient(180deg,#33245e 0%,#241846 50%,#150f33 100%)}
+  #iletisim{background:linear-gradient(180deg,#150f33 0%,#08081a 60%,#000 100%)}
 
   .reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
   .reveal.show{opacity:1;transform:none}
-
   .tag{font-family:'DM Mono',monospace;color:var(--accent2);font-size:.8rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:1.1rem}
   h2{font-family:'Anton',sans-serif;font-size:clamp(2.4rem,7vw,5rem);line-height:.98;letter-spacing:.5px;text-transform:uppercase;margin-bottom:1.4rem}
   h2 span{color:var(--accent3)}
@@ -81,76 +71,64 @@
   .icon svg{width:100%;height:100%}
   .chapter-no{position:absolute;top:7vh;right:6vw;font-family:'Anton',sans-serif;color:rgba(255,255,255,.07);font-size:clamp(5rem,13vw,11rem);line-height:1;z-index:0}
 
-  /* HERO over light bg needs dark text */
+  /* HERO */
+  #hero{display:flex;align-items:flex-start;text-align:center;overflow:hidden;padding-top:18vh}
+  #hero .hero-inner{position:relative;z-index:4;width:100%;display:flex;flex-direction:column;align-items:center}
   #hero .tag{color:#1a4a7a}
-  #hero .hero-title{color:#0a2a4a}
-  #hero .hero-title span{color:#e0556a}
-  #hero .hero-meta .k{color:#2a6bb0}
-  #hero .hero-meta .v{color:#0a2a4a}
-  #hero .hero-side{border-left-color:#e0556a}
-  #hero .hero-side p{color:#2a4a66}
-  #hero .scroll-hint{color:#2a4a66}
-
-  /* ===== ASYMMETRIC GRID HERO ===== */
-  #hero{display:grid;grid-template-columns:1.4fr .9fr;grid-template-rows:auto auto auto;gap:1.2rem 2rem;align-content:center}
-  .hero-tag{grid-column:1/2;align-self:end}
-  .hero-title{grid-column:1/3;font-family:'Anton',sans-serif;font-size:clamp(3.4rem,12vw,9rem);line-height:.86;letter-spacing:1px;text-transform:uppercase}
-  .hero-side{grid-column:2/3;grid-row:3/4;border-left:2px solid var(--accent);padding-left:1.2rem;align-self:start}
-  .hero-side p{font-family:'DM Mono',monospace;font-size:.95rem}
-  .hero-meta{grid-column:1/2;grid-row:3/4;display:flex;gap:1.6rem;flex-wrap:wrap;align-self:center}
-  .hero-meta div{font-family:'DM Mono',monospace}
-  .hero-meta .k{font-size:.72rem;letter-spacing:1px;text-transform:uppercase}
-  .hero-meta .v{font-size:1.05rem}
-  .scroll-hint{position:absolute;bottom:4vh;left:7vw;font-family:'DM Mono',monospace;font-size:.8rem;display:flex;align-items:center;gap:.6rem}
-  .scroll-hint .arrow{display:inline-block;animation:bounce 1.5s infinite}
+  .hero-title{font-family:'Anton',sans-serif;font-size:clamp(3.6rem,15vw,11rem);line-height:1.02;letter-spacing:1px;text-transform:uppercase;color:#0a2a4a}
+  .hero-title span{color:#e0556a}
+  .hero-lead{font-family:'DM Mono',monospace;color:#26537e;font-size:clamp(.95rem,2vw,1.2rem);margin-top:1.4rem;max-width:560px}
+  .hero-cta{margin-top:1.6rem;font-family:'DM Mono',monospace;color:#0a2a4a;font-size:.9rem;display:flex;align-items:center;gap:.6rem;justify-content:center}
+  .hero-cta .arrow{display:inline-block;animation:bounce 1.5s infinite}
   @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
-  @media(max-width:780px){#hero{grid-template-columns:1fr}.hero-tag,.hero-title,.hero-side,.hero-meta{grid-column:1/2}.hero-side{grid-row:auto}.hero-meta{grid-row:auto}}
+  /* hero earth sits low at the bottom, only a curve shows, never over text */
+  .hero-earth{position:absolute;bottom:-64vw;left:50%;transform:translateX(-50%);width:120vw;max-width:1500px;z-index:1;pointer-events:none}
+  .hero-earth-glow{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120vw;max-width:1500px;height:30vw;background:radial-gradient(ellipse at center bottom,rgba(120,200,255,.5),transparent 70%);z-index:0;pointer-events:none}
 
-  /* ===== CHILDHOOD + EARTH SCENE (top of story) ===== */
-  .childhood{margin-left:var(--sb);position:relative;z-index:3;
-    background:linear-gradient(180deg,#bcd2e8 0%,#9fc6ec 30%,#cdbfd0 70%,#f0c8d2 100%)}
-  @media(max-width:780px){.childhood{margin-left:0}}
-  .child-top{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:10vh 7vw;position:relative}
-  .began{font-family:'DM Mono',monospace;color:#1a4a7a;font-size:.95rem;letter-spacing:2px;text-transform:uppercase;text-align:center;margin:4vh 0 1vh;position:relative;z-index:8}
-  .earth-hold{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;overflow:hidden}
-  .kid{position:relative;z-index:8;margin-bottom:-1.5vw;animation:floatkid 5s ease-in-out infinite}
-  @keyframes floatkid{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(-1deg)}}
-  .earth-dome{position:relative;width:120vw;max-width:1500px;margin-bottom:-2vw;display:block}
-  .earth-glow{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120vw;max-width:1500px;height:40vw;background:radial-gradient(ellipse at center bottom,rgba(120,200,255,.5),transparent 70%);pointer-events:none;z-index:2}
-  .childhood .tag{color:#7a2a5a}
-  .childhood h2{color:#3a1030}
-  .childhood h2 span{color:#c24a82}
-  .childhood .body{color:#4a2040}
-  .childhood .body strong{color:#c24a82}
+  /* HORIZONTAL FIRST TRANSITION (sticky) */
+  .horiz{position:relative;height:220vh;background:#aed6f4}
+  .horiz-sticky{position:sticky;top:0;height:100vh;width:100vw;overflow:hidden;backface-visibility:hidden}
+  .horiz-track{display:flex;width:200vw;height:100%;will-change:transform;transform:translate3d(0,0,0);backface-visibility:hidden}
+  .hpane{width:100vw;height:100%;flex:0 0 100vw;display:flex;flex-direction:column;justify-content:center;padding:10vh 7vw 10vh calc(7vw + var(--sb));position:relative}
+  .hpane.p1{background:linear-gradient(120deg,#aed6f4 0%,#a3cdee 100%)}
+  .hpane.p2{background:linear-gradient(120deg,#a3cdee 0%,#93bce8 100%)}
+  .hpane .hint{position:absolute;bottom:6vh;font-family:'DM Mono',monospace;color:#2a4a66;font-size:.8rem}
+  .hpane.p1 .hint{right:7vw}
+  .story{max-width:600px}
+  @media(max-width:780px){
+    /* on mobile, collapse horizontal to normal vertical */
+    .horiz{height:auto}.horiz-sticky{position:static;height:auto;width:100%}
+    .horiz-track{flex-direction:column;width:100%;transform:none!important}
+    .hpane{width:100%;flex:none;min-height:100vh;padding:10vh 7vw}
+  }
 
-  /* story sections asymmetric */
-  .story{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center}
-  .story.flip .story-text{order:2}
-  .story-text{max-width:560px}
-  @media(max-width:780px){.story{grid-template-columns:1fr}.story.flip .story-text{order:0}}
+  .story-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center}
+  .story-grid.flip .story{order:2}
+  @media(max-width:780px){.story-grid{grid-template-columns:1fr}.story-grid.flip .story{order:0}}
+  /* full-width sections: cap content width and push to one side for the slalom */
+  .side-left>*{max-width:640px;margin-right:auto}
+  .side-right{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+  .side-right>*{max-width:640px;margin-left:auto}
+  .side-right .skill-row{justify-content:flex-end}
+  @media(max-width:780px){.side-right{align-items:flex-start;text-align:left}.side-right>*{margin-left:0}.side-right .skill-row{justify-content:flex-start}.side-left>*{margin-right:0}}
 
-  /* ===== SKILLS with subheadings ===== */
+  /* SKILLS subheadings */
   .skillblock{margin-top:1.6rem;max-width:900px}
   .skill-cat{margin-bottom:1.8rem}
   .skill-cat h4{font-family:'DM Mono',monospace;color:var(--accent2);font-size:.8rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:.8rem;border-bottom:1px solid rgba(92,242,214,.25);padding-bottom:.4rem}
   .skill-row{display:flex;flex-wrap:wrap;gap:.7rem}
-  .pill{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05);border-radius:14px;padding:.6rem 1.1rem;font-family:'DM Mono',monospace;font-size:.92rem;transition:.3s}
+  .pill{border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.06);border-radius:14px;padding:.6rem 1.1rem;font-family:'DM Mono',monospace;font-size:.92rem;transition:.3s}
   .pill:hover{border-color:var(--accent2);color:var(--accent2);transform:translateY(-3px)}
 
-  /* ===== BENTO / Coming Soon projects ===== */
-  .bento{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;max-width:1000px}
-  .box{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:1.8rem;backdrop-filter:blur(4px);transition:.35s}
-  .b-soon{grid-column:span 4;min-height:240px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
-    background:linear-gradient(150deg,rgba(255,92,138,.14),rgba(92,242,214,.06))}
+  /* PROJECTS coming soon */
+  .b-soon{max-width:1000px;margin-top:1.6rem;min-height:240px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;background:linear-gradient(150deg,rgba(255,92,138,.16),rgba(92,242,214,.06));border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:2rem;backdrop-filter:blur(4px);transition:.35s}
   .b-soon:hover{border-color:var(--accent);box-shadow:0 20px 50px rgba(255,92,138,.18)}
   .b-soon .num{font-family:'DM Mono',monospace;color:var(--accent2);font-size:.78rem}
   .b-soon h3{font-family:'Anton',sans-serif;font-size:clamp(2.6rem,7vw,4.6rem);letter-spacing:1px;text-transform:uppercase;margin:.4rem 0}
   .b-soon p{color:var(--muted);font-family:'DM Mono',monospace;font-size:1rem;max-width:480px}
 
-  /* ===== CONTACT (deepest / space) ===== */
-  #iletisim{margin-left:var(--sb);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12vh 7vw;position:relative;z-index:3;
-    background:linear-gradient(180deg,#0a1430 0%,#05060f 60%,#000000 100%)}
-  @media(max-width:780px){#iletisim{margin-left:0}}
+  /* CONTACT */
+  #iletisim{align-items:center;text-align:center}
   #iletisim .body{margin:0 auto 1.6rem}
   .links{display:flex;gap:1.4rem;flex-wrap:wrap;justify-content:center}
   .links a{color:#fff;text-decoration:none;font-family:'DM Mono',monospace;border-bottom:2px solid var(--accent);padding-bottom:3px;transition:.3s}
@@ -164,13 +142,13 @@
 <div class="stars" id="stars"></div>
 
 <aside class="sidebar">
-  <a href="#hero" class="sb-logo">E<span>.</span>A</a>
+  <a href="#hero" class="sb-logo">E.A</a>
   <button class="sb-toggle" onclick="document.getElementById('sbnav').classList.toggle('open')">&#9776;</button>
   <nav class="sb-nav" id="sbnav">
-    <a href="#cocukluk" data-tr="Çocukluk" data-en="Childhood">Çocukluk</a>
-    <a href="#okul" data-tr="Okul" data-en="School">Okul</a>
-    <a href="#ilgi" data-tr="Beceriler" data-en="Skills">Beceriler</a>
-    <a href="#projeler" data-tr="Projeler" data-en="Projects">Projeler</a>
+    <a href="#hero" data-tr="Başlangıç" data-en="Start">Başlangıç</a>
+    <a href="#s-school" data-tr="Okul" data-en="School">Okul</a>
+    <a href="#s-skills" data-tr="Beceriler" data-en="Skills">Beceriler</a>
+    <a href="#s-projects" data-tr="Projeler" data-en="Projects">Projeler</a>
     <a href="#iletisim" data-tr="İletişim" data-en="Contact">İletişim</a>
   </nav>
   <div class="sb-lang">
@@ -197,43 +175,16 @@
 </div>
 
 <main class="main">
-  <!-- HERO -->
-  <section id="hero">
-    <div class="hero-tag tag reveal" data-tr="Bilgisayar Mühendisliği Öğrencisi · NKÜ" data-en="Computer Engineering Student · NKU">Bilgisayar Mühendisliği Öğrencisi · NKÜ</div>
-    <h1 class="hero-title reveal" data-tr="ERALP<br><span>AKYÜZ</span>" data-en="ERALP<br><span>AKYÜZ</span>">ERALP<br><span>AKYÜZ</span></h1>
-    <div class="hero-meta reveal">
-      <div><div class="k" data-tr="Şehir" data-en="Based in">Şehir</div><div class="v">Kırklareli / Tekirdağ</div></div>
-      <div><div class="k" data-tr="Bölüm" data-en="Studying">Bölüm</div><div class="v" data-tr="Bilgisayar Müh. · NKÜ" data-en="Computer Eng. · NKU">Bilgisayar Müh. · NKÜ</div></div>
-      <div><div class="k" data-tr="Durum" data-en="Status">Durum</div><div class="v" data-tr="Öğreniyor" data-en="Learning">Öğreniyor</div></div>
+  <!-- HERO with earth -->
+  <section class="panel" id="hero">
+    <div class="hero-inner">
+      <div class="tag reveal" data-tr="Bilgisayar Mühendisliği Öğrencisi · NKÜ" data-en="Computer Engineering Student · NKU">Bilgisayar Mühendisliği Öğrencisi · NKÜ</div>
+      <h1 class="hero-title reveal" data-tr="ERALP<br><span>AKYÜZ</span>" data-en="ERALP<br><span>AKYÜZ</span>">ERALP<br><span>AKYÜZ</span></h1>
+      <p class="hero-lead reveal" data-tr="Çocukluktan bugüne, dünyadan uzaya doğru bir hikaye." data-en="A story from childhood to today, from earth out into space.">Çocukluktan bugüne, dünyadan uzaya doğru bir hikaye.</p>
+      <div class="hero-cta reveal"><span data-tr="Uçuşa hazırsan kaydır" data-en="If you're ready for liftoff, scroll">Uçuşa hazırsan kaydır</span> <span class="arrow">&#8595;</span></div>
     </div>
-    <div class="hero-side reveal"><p data-tr="// çocukluktan bugüne, dünyadan uzaya doğru bir hikaye. aşağı kaydır." data-en="// a story from childhood to today, from earth out into space. scroll down.">// çocukluktan bugüne, dünyadan uzaya doğru bir hikaye. aşağı kaydır.</p></div>
-    <div class="scroll-hint"><span class="arrow">&#8595;</span> <span data-tr="hikayeyi başlat" data-en="start the story">hikayeyi başlat</span></div>
-  </section>
-</main>
-
-<!-- CHILDHOOD + EARTH (story begins on earth) -->
-<section class="childhood" id="cocukluk">
-  <div class="began reveal" data-tr="hikaye burada başladı" data-en="where the story began">hikaye burada başladı</div>
-  <div class="earth-hold">
-    <div class="kid">
-      <svg width="120" height="150" viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg">
-        <path d="M62 70 q30 6 44 -4 q-10 16 -40 16" fill="#ffd166" opacity="0.9"/>
-        <path d="M46 96 q-4 22 -10 30" stroke="#2f6db5" stroke-width="9" fill="none" stroke-linecap="round"/>
-        <path d="M70 96 q6 22 12 30" stroke="#2f6db5" stroke-width="9" fill="none" stroke-linecap="round"/>
-        <ellipse cx="34" cy="128" rx="7" ry="4" fill="#1c1830"/>
-        <ellipse cx="84" cy="128" rx="7" ry="4" fill="#1c1830"/>
-        <path d="M40 96 Q40 64 60 64 Q80 64 80 96 Q60 104 40 96 Z" fill="#3a7bd5"/>
-        <path d="M44 80 q-10 12 -4 22" stroke="#3a7bd5" stroke-width="8" fill="none" stroke-linecap="round"/>
-        <circle cx="60" cy="48" r="18" fill="#f1c4a0"/>
-        <path d="M41 47 Q39 24 60 22 Q81 24 79 47 Q75 34 66 33 Q70 41 62 39 Q64 30 55 32 Q59 41 50 38 Q51 31 44 36 Q47 42 41 47 Z" fill="#ff7a18"/>
-        <path d="M42 44 Q40 30 49 27" stroke="#ff7a18" stroke-width="5" fill="none" stroke-linecap="round"/>
-        <circle cx="54" cy="49" r="2.4" fill="#2a2540"/>
-        <circle cx="66" cy="49" r="2.4" fill="#2a2540"/>
-        <path d="M54 56 Q60 61 66 56" stroke="#c47a55" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-      </svg>
-    </div>
-    <div class="earth-glow"></div>
-    <svg class="earth-dome" viewBox="0 0 1000 360" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet">
+    <div class="hero-earth-glow"></div>
+    <svg class="hero-earth" viewBox="0 0 1000 360" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet">
       <defs><clipPath id="dome"><path d="M40 360 C40 130 240 30 500 30 C760 30 960 130 960 360 Z"/></clipPath></defs>
       <path d="M40 360 C40 130 240 30 500 30 C760 30 960 130 960 360 Z" fill="#3aa6d8"/>
       <g clip-path="url(#dome)" fill="#8cc63f">
@@ -245,26 +196,42 @@
         <path d="M840 260 q24 -4 30 18 q4 24 -20 30 q-24 4 -28 -20 q-2 -20 18 -28z"/>
       </g>
     </svg>
-  </div>
-  <div class="child-top">
-    <div class="story">
-      <div class="story-text">
-        <div class="icon reveal"><svg viewBox="0 0 64 64" fill="none"><rect x="8" y="14" width="48" height="32" rx="4" stroke="#c24a82" stroke-width="3"/><rect x="4" y="50" width="56" height="6" rx="3" fill="#7a2a5a"/><circle cx="22" cy="30" r="4" fill="#e09a3a"/><path d="M38 26h10M38 32h10" stroke="#e09a3a" stroke-width="3" stroke-linecap="round"/></svg></div>
-        <div class="tag reveal" data-tr="Her şey nasıl başladı" data-en="How it all began">Her şey nasıl başladı</div>
-        <h2 class="reveal" data-tr="ÖNCE <span>OYUNLAR</span> VARDI" data-en="FIRST CAME <span>THE GAMES</span>">ÖNCE <span>OYUNLAR</span> VARDI</h2>
-        <p class="body reveal" data-tr="Bilgisayarla tanışmam <strong>oyunlarla</strong> oldu. Küçükken ekranın karşısında saatler geçirir, &quot;bu nasıl çalışıyor?&quot; diye merak ederdim. Beni asıl saran şey oyunun kendisi değil, <strong>arkasındaki sistemdi.</strong>" data-en="I met computers through <strong>games</strong>. As a kid I spent hours at the screen, wondering &quot;how does this work?&quot;. What really drew me in wasn't the game &mdash; it was <strong>the system behind it.</strong>">Bilgisayarla tanışmam <strong>oyunlarla</strong> oldu. Küçükken ekranın karşısında saatler geçirir, "bu nasıl çalışıyor?" diye merak ederdim. Beni asıl saran şey oyunun kendisi değil, <strong>arkasındaki sistemdi.</strong></p>
+  </section>
+</main>
+
+<!-- HORIZONTAL: page slides RIGHT into "Önce oyunlar vardı" -->
+<section class="horiz" id="s-childhood">
+  <div class="horiz-sticky">
+    <div class="horiz-track" id="htrack">
+      <div class="hpane p1">
+        <div class="story reveal">
+          <div class="tag" style="color:#1a4a7a" data-tr="Bölüm 01" data-en="Chapter 01">Bölüm 01</div>
+          <h2 style="color:#0a2a4a" data-tr="HİKAYE <span style='color:#e0556a'>BAŞLIYOR</span>" data-en="THE STORY <span style='color:#e0556a'>BEGINS</span>">HİKAYE <span style="color:#e0556a">BAŞLIYOR</span></h2>
+          <p class="body" style="color:#26537e" data-tr="Uçuş başladı. Şimdi geçmişe, her şeyin başladığı yere gidiyoruz. Kaydırmaya devam et..." data-en="Liftoff. Now we drift back in time, to where it all started. Keep scrolling...">Uçuş başladı. Şimdi geçmişe, her şeyin başladığı yere gidiyoruz. Kaydırmaya devam et...</p>
+        </div>
+        <div class="hint" data-tr="kaydırmaya devam et →" data-en="keep scrolling →">kaydırmaya devam et →</div>
       </div>
-      <div></div>
+      <div class="hpane p2">
+        <div class="story-grid">
+          <div class="story reveal">
+            <div class="icon"><svg viewBox="0 0 64 64" fill="none"><rect x="8" y="14" width="48" height="32" rx="4" stroke="#1a4a7a" stroke-width="3"/><rect x="4" y="50" width="56" height="6" rx="3" fill="#e0556a"/><circle cx="22" cy="30" r="4" fill="#e09a3a"/><path d="M38 26h10M38 32h10" stroke="#e09a3a" stroke-width="3" stroke-linecap="round"/></svg></div>
+            <div class="tag" style="color:#1a4a7a" data-tr="Her şey nasıl başladı" data-en="How it all began">Her şey nasıl başladı</div>
+            <h2 style="color:#0a2a4a" data-tr="ÖNCE <span style='color:#e0556a'>OYUNLAR</span> VARDI" data-en="FIRST CAME <span style='color:#e0556a'>THE GAMES</span>">ÖNCE <span style="color:#e0556a">OYUNLAR</span> VARDI</h2>
+            <p class="body" style="color:#26537e" data-tr="Bilgisayarla tanışmam <strong style='color:#c2456a'>oyunlarla</strong> oldu. Küçükken ekranın karşısında saatler geçirir, &quot;bu nasıl çalışıyor?&quot; diye merak ederdim. Beni asıl saran şey oyunun kendisi değil, <strong style='color:#c2456a'>arkasındaki sistemdi.</strong>" data-en="I met computers through <strong style='color:#c2456a'>games</strong>. As a kid I spent hours at the screen, wondering &quot;how does this work?&quot;. What really drew me in wasn't the game &mdash; it was <strong style='color:#c2456a'>the system behind it.</strong>">Bilgisayarla tanışmam <strong style="color:#c2456a">oyunlarla</strong> oldu. Küçükken ekranın karşısında saatler geçirir, "bu nasıl çalışıyor?" diye merak ederdim. Beni asıl saran şey oyunun kendisi değil, <strong style="color:#c2456a">arkasındaki sistemdi.</strong></p>
+          </div>
+        </div>
+        <div class="hint" style="left:calc(7vw + var(--sb))" data-tr="↓ şimdi aşağı in" data-en="↓ now go down">↓ şimdi aşağı in</div>
+      </div>
     </div>
   </div>
 </section>
 
 <main class="main">
   <!-- AWAKENING -->
-  <section id="s-awaken">
+  <section class="panel" id="s-awaken">
     <div class="chapter-no">02</div>
-    <div class="story flip">
-      <div class="story-text">
+    <div class="story-grid">
+      <div class="story">
         <div class="icon reveal"><svg viewBox="0 0 64 64" fill="none"><path d="M14 26c0-8 6-14 14-14M44 16l8-8M44 16c4 4 4 10 0 14l-6 6M14 44l-6 6M14 44c4 4 10 4 14 0" stroke="#5cf2d6" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="32" r="9" stroke="#ffd166" stroke-width="3"/><path d="M28 32l3 3 6-6" stroke="#ff5c8a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="tag reveal" data-tr="Merak büyüyor" data-en="Curiosity grows">Merak büyüyor</div>
         <h2 class="reveal" data-tr="&quot;BUNU NASIL <span>YAPARIM?</span>&quot;" data-en="&quot;HOW WOULD <span>I</span> BUILD THIS?&quot;">"BUNU NASIL <span>YAPARIM?</span>"</h2>
@@ -275,10 +242,10 @@
   </section>
 
   <!-- SCHOOL -->
-  <section id="okul">
+  <section class="panel" id="s-school">
     <div class="chapter-no">03</div>
-    <div class="story">
-      <div class="story-text">
+    <div class="story-grid flip">
+      <div class="story">
         <div class="icon reveal"><svg viewBox="0 0 64 64" fill="none"><path d="M32 6l4 12 12 1-9 8 3 12-10-7-10 7 3-12-9-8 12-1z" stroke="#ffd166" stroke-width="3" stroke-linejoin="round"/><path d="M12 52h40" stroke="#5cf2d6" stroke-width="3" stroke-linecap="round"/><path d="M20 52v-6M32 52v-10M44 52v-6" stroke="#ff5c8a" stroke-width="3" stroke-linecap="round"/></svg></div>
         <div class="tag reveal" data-tr="Serüven derinleşiyor" data-en="The journey deepens">Serüven derinleşiyor</div>
         <h2 class="reveal" data-tr="OKUL VE <span>DERİNLEŞME</span>" data-en="SCHOOL &amp; <span>GOING DEEPER</span>">OKUL VE <span>DERİNLEŞME</span></h2>
@@ -288,8 +255,8 @@
     </div>
   </section>
 
-  <!-- SKILLS & INTERESTS with subheadings -->
-  <section id="ilgi">
+  <!-- SKILLS -->
+  <section class="panel side-right" id="s-skills">
     <div class="chapter-no">04</div>
     <div class="icon reveal"><svg viewBox="0 0 64 64" fill="none"><path d="M32 8a16 16 0 0 0-9 29c1 1 2 3 2 5h14c0-2 1-4 2-5a16 16 0 0 0-9-29z" stroke="#ffd166" stroke-width="3" stroke-linejoin="round"/><path d="M26 50h12M28 56h8" stroke="#5cf2d6" stroke-width="3" stroke-linecap="round"/></svg></div>
     <div class="tag reveal" data-tr="Becerilerim ve ilgi alanlarım" data-en="My skills and interests">Becerilerim ve ilgi alanlarım</div>
@@ -323,24 +290,22 @@
     </div>
   </section>
 
-  <!-- PROJECTS coming soon -->
-  <section id="projeler">
+  <!-- PROJECTS -->
+  <section class="panel side-left" id="s-projects">
     <div class="chapter-no">NOW</div>
     <div class="icon reveal"><svg viewBox="0 0 64 64" fill="none"><path d="M40 14l10 10-22 22-10 2 2-10z" stroke="#ffd166" stroke-width="3" stroke-linejoin="round"/><path d="M36 18l10 10" stroke="#ff5c8a" stroke-width="3"/><path d="M14 52h20" stroke="#5cf2d6" stroke-width="3" stroke-linecap="round"/></svg></div>
     <div class="tag reveal" data-tr="Bugün · Yaptıklarım" data-en="Today · What I build">Bugün · Yaptıklarım</div>
     <h2 class="reveal"><span>PROJELERİM</span></h2>
-    <div class="bento" style="margin-top:1.6rem">
-      <div class="box b-soon reveal">
-        <div class="num">// 2026</div>
-        <h3 data-tr="ÇOK YAKINDA" data-en="COMING SOON">ÇOK YAKINDA</h3>
-        <p data-tr="Projelerim şu an hazırlanıyor. Kişisel portföyüm ve çalışmalarım yakında burada olacak." data-en="My projects are in the works. My personal portfolio and builds will be here soon.">Projelerim şu an hazırlanıyor. Kişisel portföyüm ve çalışmalarım yakında burada olacak.</p>
-      </div>
+    <div class="b-soon reveal">
+      <div class="num">// 2026</div>
+      <h3 data-tr="ÇOK YAKINDA" data-en="COMING SOON">ÇOK YAKINDA</h3>
+      <p data-tr="Projelerim şu an hazırlanıyor. Kişisel portföyüm ve çalışmalarım yakında burada olacak." data-en="My projects are in the works. My personal portfolio and builds will be here soon.">Projelerim şu an hazırlanıyor. Kişisel portföyüm ve çalışmalarım yakında burada olacak.</p>
     </div>
   </section>
 </main>
 
-<!-- CONTACT (deep space) -->
-<section id="iletisim">
+<!-- CONTACT deep space -->
+<section class="panel" id="iletisim" style="margin-left:var(--sb)">
   <div class="tag reveal" data-tr="İletişim" data-en="Contact">İletişim</div>
   <h2 class="reveal" data-tr="<span>TANIŞALIM</span> MI?" data-en="LET'S <span>CONNECT</span>"><span>TANIŞALIM</span> MI?</h2>
   <p class="body reveal" data-tr="Hâlâ öğreniyorum, hâlâ merak ediyorum. Bir fikrin, projen ya da sadece sohbet etmek istersen yazmaktan çekinme." data-en="Still learning, still curious. If you have an idea, a project, or just want to chat — reach out.">Hâlâ öğreniyorum, hâlâ merak ediyorum. Bir fikrin, projen ya da sadece sohbet etmek istersen yazmaktan çekinme.</p>
@@ -355,25 +320,80 @@
 <script>
   var starBox=document.getElementById('stars');
   for(var i=0;i<90;i++){var s=document.createElement('div');s.className='star';var sz=Math.random()*2+1;s.style.width=sz+'px';s.style.height=sz+'px';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.animationDelay=Math.random()*3+'s';starBox.appendChild(s);}
+
   var prog=document.getElementById('prog');var starsEl=document.getElementById('stars');var rocket=document.getElementById('rocket');
-  function onScroll(){
-    var h=document.documentElement.scrollHeight-window.innerHeight;var p=Math.min(window.scrollY/h,1);
-    prog.style.width=(p*100)+'%';
-    /* stars appear as we climb into space (later half) */
-    starsEl.style.opacity=p>0.55?Math.min(1,(p-0.55)/0.2):0;
-    /* rocket climbs from bottom (earth) to top (space) */
-    var topVH=80-p*68;var tilt=-p*14;var scale=0.7+p*0.3;
-    rocket.style.top=topVH+'vh';
-    rocket.style.transform='translateX(-50%) rotate('+tilt+'deg) scale('+scale+')';
-    rocket.style.opacity=p<0.06?Math.max(0,p/0.06):1;
+  var htrack=document.getElementById('htrack');var horiz=document.getElementById('s-childhood');
+  var isMobile=function(){return window.innerWidth<=780;};
+
+  /* lerp ONLY for the rocket (decorative). The page/track motion is bound directly
+     to scroll position so dvertical<->horizontal transitions never lag or stutter. */
+  var cur={top:50,left:78,scale:1,tilt:0,op:1};
+  var tgt={top:50,left:78,scale:1,tilt:0,op:1};
+  function lerp(a,b,t){return a+(b-a)*t;}
+
+  /* track update runs synchronously on scroll = perfectly locked to the page */
+  function updateTrack(){
+    if(isMobile()){htrack.style.transform='';return;}
+    var rect=horiz.getBoundingClientRect();
+    var total=horiz.offsetHeight-window.innerHeight;
+    var hx=Math.min(Math.max(-rect.top/total,0),1);
+    htrack.style.transform='translate3d(-'+(hx*50)+'%,0,0)';
   }
-  window.addEventListener('scroll',onScroll);onScroll();
+
+  function compute(){
+    var h=document.documentElement.scrollHeight-window.innerHeight;
+    var p=Math.min(window.scrollY/h,1);
+    prog.style.width=(p*100)+'%';
+    starsEl.style.opacity=p>0.5?Math.min(1,(p-0.5)/0.25):0;
+
+    if(p<0.07){
+      /* LAUNCH: shoots up and to the right, nose UP */
+      var a=p/0.07;
+      tgt.top=50-a*34;tgt.left=78+a*5;tgt.scale=1+a*0.18;tgt.tilt=a*12;tgt.op=1;
+    }else{
+      /* DESCENT: flip upside-down, then SLALOM down the right side around the text */
+      var b=(p-0.07)/0.93;
+      tgt.top=16+b*74;
+      tgt.scale=1.18-b*0.5;
+      /* slalom: weave fully left-right with a sine wave so the rocket threads
+         between the text blocks that alternate sides as you scroll */
+      var sway=Math.sin(b*Math.PI*4.0);        /* ~4 weaves over the descent */
+      tgt.left=55+sway*32;                      /* 23% .. 87% : sweeps across the page */
+      var flip=Math.min(b/0.18,1);
+      tgt.tilt=12+flip*168 + sway*18;           /* nose down + bank into the weave */
+      tgt.op=p>0.93?Math.max(0,1-(p-0.93)*15):1;
+    }
+  }
+
+  function onScroll(){updateTrack();compute();}
+  window.addEventListener('scroll',onScroll,{passive:true});
+  window.addEventListener('resize',onScroll);
+
+  /* rocket-only smoothing loop */
+  function animate(){
+    var e=0.12;
+    cur.top=lerp(cur.top,tgt.top,e);
+    cur.left=lerp(cur.left,tgt.left,e);
+    cur.scale=lerp(cur.scale,tgt.scale,e);
+    cur.tilt=lerp(cur.tilt,tgt.tilt,e);
+    cur.op=lerp(cur.op,tgt.op,e);
+    rocket.style.top=cur.top+'vh';
+    rocket.style.left=cur.left+'%';
+    rocket.style.transform='translateX(-50%) rotate('+cur.tilt+'deg) scale('+cur.scale+')';
+    rocket.style.opacity=cur.op;
+    requestAnimationFrame(animate);
+  }
+  compute();updateTrack();cur=JSON.parse(JSON.stringify(tgt));requestAnimationFrame(animate);
+
   var io=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('show')})},{threshold:.15});
   document.querySelectorAll('.reveal').forEach(function(el,i){el.style.transitionDelay=(i%4*0.08)+'s';io.observe(el)});
-  var secs=document.querySelectorAll('section[id]');var navA=document.querySelectorAll('.sb-nav a');
+
+  var navA=document.querySelectorAll('.sb-nav a');
+  var secs=document.querySelectorAll('section[id]');
   var so=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){var id=x.target.id;navA.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+id)})}})},{threshold:.4});
   secs.forEach(function(s){so.observe(s)});
   document.querySelectorAll('.sb-nav a').forEach(function(a){a.addEventListener('click',function(){document.getElementById('sbnav').classList.remove('open')})});
+
   function setLang(lang){
     document.documentElement.lang=lang;
     document.querySelectorAll('[data-'+lang+']').forEach(function(el){el.innerHTML=el.getAttribute('data-'+lang)});
