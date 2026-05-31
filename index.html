@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eralp Akyüz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Mono:wght@400;500&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#f4f1ff;--muted:#b9b3d6;--accent:#ff5c8a;--accent2:#5cf2d6;--accent3:#ffd166;--sb:96px}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:#000;color:var(--ink);font-family:'Archivo',sans-serif;overflow-x:hidden;line-height:1.6}
+
+  .stars{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .3s}
+  .star{position:absolute;background:#fff;border-radius:50%;opacity:.6;animation:twinkle 3s infinite ease-in-out}
+  @keyframes twinkle{0%,100%{opacity:.12}50%{opacity:.9}}
+
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--accent3),var(--accent2),var(--accent));z-index:120;transition:width .1s}
+
+  /* ===== VERTICAL SIDEBAR NAV ===== */
+  .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sb);z-index:110;
+    display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+    padding:22px 0;background:rgba(5,6,15,.4);backdrop-filter:blur(10px);border-right:1px solid rgba(255,255,255,.08)}
+  .sb-logo{font-family:'Anton',sans-serif;font-size:1.3rem;color:#fff;text-decoration:none;letter-spacing:1px;mix-blend-mode:difference}
+  .sb-logo span{color:var(--accent3)}
+  .sb-nav{display:flex;flex-direction:column;gap:1.5rem;align-items:center}
+  .sb-nav a{writing-mode:vertical-rl;transform:rotate(180deg);font-family:'DM Mono',monospace;font-size:.78rem;
+    letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:.25s;position:relative}
+  .sb-nav a:hover{color:var(--accent2)}
+  .sb-nav a.active{color:#fff}
+  .sb-nav a.active::after{content:"";position:absolute;left:-8px;top:0;bottom:0;width:3px;border-radius:3px;background:var(--accent)}
+  .sb-lang{display:flex;flex-direction:column;border:1px solid rgba(255,255,255,.18);border-radius:30px;overflow:hidden;font-family:'DM Mono',monospace}
+  .sb-lang button{background:none;border:none;color:var(--muted);padding:.45rem 0;width:38px;cursor:pointer;font-family:inherit;font-size:.72rem;transition:.25s}
+  .sb-lang button.active{background:var(--accent);color:#000;font-weight:500}
+  .sb-toggle{display:none}
+  @media(max-width:780px){
+    :root{--sb:0px}
+    .sidebar{flex-direction:row;width:100%;height:54px;bottom:auto;padding:0 4vw;justify-content:space-between;border-right:none;border-bottom:1px solid rgba(255,255,255,.08)}
+    .sb-nav{position:fixed;top:54px;left:0;right:0;flex-direction:column;gap:1rem;background:rgba(5,6,15,.96);padding:1.4rem 5vw;transform:translateY(-160%);transition:.3s;align-items:flex-start}
+    .sb-nav.open{transform:none}
+    .sb-nav a{writing-mode:horizontal-tb;transform:none;color:#ddd}
+    .sb-nav a.active::after{display:none}
+    .sb-lang{flex-direction:row}
+    .sb-lang button{padding:.4rem .7rem;width:auto}
+    .sb-toggle{display:block;background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer}
+  }
+
+  /* ===== ROCKET (climbs up as you scroll: earth->space) ===== */
+  .rocket{position:fixed;left:calc(var(--sb) + (100vw - var(--sb))*0.5);top:80vh;z-index:60;transform:translateX(-50%);transition:transform .12s linear;will-change:top,transform;filter:drop-shadow(0 0 18px rgba(255,180,120,.45))}
+  .rocket .trail{position:absolute;left:50%;top:100%;transform:translateX(-50%);width:5px;height:130px;background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(120,180,255,.12),transparent);filter:blur(2px);opacity:.55}
+  @media(max-width:780px){.rocket{left:50%}}
+
+  .main{margin-left:var(--sb);position:relative;z-index:3}
+  @media(max-width:780px){.main{margin-left:0;padding-top:54px}}
+  section{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:10vh 7vw;position:relative}
+
+  /* ===== Atmospheric color layers: TOP = daylight/earth, BOTTOM = deep space ===== */
+  /* Hero: daylight sky blue */
+  #hero{background:linear-gradient(180deg,#acd6f5 0%,#9fc6ec 60%,#bcd2e8 100%)}
+  /* Childhood scene wrapper handles its own gradient below */
+  /* Awakening: powder pink -> pink */
+  #s-awaken{background:linear-gradient(180deg,#f0c8d2 0%,#e89ab0 55%,#c24a82 100%)}
+  /* School: pink -> deep purple */
+  #okul{background:linear-gradient(180deg,#c24a82 0%,#8a2a6e 55%,#5a1a64 100%)}
+  /* Skills/Interests: deep purple -> dark purple */
+  #ilgi{background:linear-gradient(180deg,#5a1a64 0%,#3a1450 55%,#2a0f4e 100%)}
+  /* Projects: dark purple -> navy */
+  #projeler{background:linear-gradient(180deg,#2a0f4e 0%,#1a1042 55%,#0a1430 100%)}
+
+  .reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
+  .reveal.show{opacity:1;transform:none}
+
+  .tag{font-family:'DM Mono',monospace;color:var(--accent2);font-size:.8rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:1.1rem}
+  h2{font-family:'Anton',sans-serif;font-size:clamp(2.4rem,7vw,5rem);line-height:.98;letter-spacing:.5px;text-transform:uppercase;margin-bottom:1.4rem}
+  h2 span{color:var(--accent3)}
+  .body{font-size:clamp(1.05rem,2vw,1.4rem);color:#eee;max-width:600px}
+  .body strong{color:var(--accent3);font-weight:600}
+  .icon{width:clamp(48px,7vw,76px);height:clamp(48px,7vw,76px);margin-bottom:1rem}
+  .icon svg{width:100%;height:100%}
+  .chapter-no{position:absolute;top:7vh;right:6vw;font-family:'Anton',sans-serif;color:rgba(255,255,255,.07);font-size:clamp(5rem,13vw,11rem);line-height:1;z-index:0}
+
+  /* HERO over light bg needs dark text */
+  #hero .tag{color:#1a4a7a}
+  #hero .hero-title{color:#0a2a4a}
+  #hero .hero-title span{color:#e0556a}
+  #hero .hero-meta .k{color:#2a6bb0}
+  #hero .hero-meta .v{color:#0a2a4a}
+  #hero .hero-side{border-left-color:#e0556a}
+  #hero .hero-side p{color:#2a4a66}
+  #hero .scroll-hint{color:#2a4a66}
+
+  /* ===== ASYMMETRIC GRID HERO ===== */
+  #hero{display:grid;grid-template-columns:1.4fr .9fr;grid-template-rows:auto auto auto;gap:1.2rem 2rem;align-content:center}
+  .hero-tag{grid-column:1/2;align-self:end}
+  .hero-title{grid-column:1/3;font-family:'Anton',sans-serif;font-size:clamp(3.4rem,12vw,9rem);line-height:.86;letter-spacing:1px;text-transform:uppercase}
+  .hero-side{grid-column:2/3;grid-row:3/4;border-left:2px solid var(--accent);padding-left:1.2rem;align-self:start}
+  .hero-side p{font-family:'DM Mono',monospace;font-size:.95rem}
+  .hero-meta{grid-column:1/2;grid-row:3/4;display:flex;gap:1.6rem;flex-wrap:wrap;align-self:center}
+  .hero-meta div{font-family:'DM Mono',monospace}
+  .hero-meta .k{font-size:.72rem;letter-spacing:1px;text-transform:uppercase}
+  .hero-meta .v{font-size:1.05rem}
+  .scroll-hint{position:absolute;bottom:4vh;left:7vw;font-family:'DM Mono',monospace;font-size:.8rem;display:flex;align-items:center;gap:.6rem}
+  .scroll-hint .arrow{display:inline-block;animation:bounce 1.5s infinite}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+  @media(max-width:780px){#hero{grid-template-columns:1fr}.hero-tag,.hero-title,.hero-side,.hero-meta{grid-column:1/2}.hero-side{grid-row:auto}.hero-meta{grid-row:auto}}
+
+  /* ===== CHILDHOOD + EARTH SCENE (top of story) ===== */
+  .childhood{margin-left:var(--sb);position:relative;z-index:3;
+    background:linear-gradient(180deg,#bcd2e8 0%,#9fc6ec 30%,#cdbfd0 70%,#f0c8d2 100%)}
+  @media(max-width:780px){.childhood{margin-left:0}}
+  .child-top{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:10vh 7vw;position:relative}
+  .began{font-family:'DM Mono',monospace;color:#1a4a7a;font-size:.95rem;letter-spacing:2px;text-transform:uppercase;text-align:center;margin:4vh 0 1vh;position:relative;z-index:8}
+  .earth-hold{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;overflow:hidden}
+  .kid{position:relative;z-index:8;margin-bottom:-1.5vw;animation:floatkid 5s ease-in-out infinite}
+  @keyframes floatkid{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(-1deg)}}
+  .earth-dome{position:relative;width:120vw;max-width:1500px;margin-bottom:-2vw;display:block}
+  .earth-glow{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120vw;max-width:1500px;height:40vw;background:radial-gradient(ellipse at center bottom,rgba(120,200,255,.5),transparent 70%);pointer-events:none;z-index:2}
+  .childhood .tag{color:#7a2a5a}
+  .childhood h2{color:#3a1030}
+  .childhood h2 span{color:#c24a82}
+  .childhood .body{color:#4a2040}
+  .childhood .body strong{color:#c24a82}
+
+  /* story sections asymmetric */
+  .story{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center}
+  .story.flip .story-text{order:2}
+  .story-text{max-width:560px}
+  @media(max-width:780px){.story{grid-template-columns:1fr}.story.flip .story-text{order:0}}
+
+  /* ===== SKILLS with subheadings ===== */
+  .skillblock{margin-top:1.6rem;max-width:900px}
+  .skill-cat{margin-bottom:1.8rem}
+  .skill-cat h4{font-family:'DM Mono',monospace;color:var(--accent2);font-size:.8rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:.8rem;border-bottom:1px solid rgba(92,242,214,.25);padding-bottom:.4rem}
+  .skill-row{display:flex;flex-wrap:wrap;gap:.7rem}
+  .pill{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.05);border-radius:14px;padding:.6rem 1.1rem;font-family:'DM Mono',monospace;font-size:.92rem;transition:.3s}
+  .pill:hover{border-color:var(--accent2);color:var(--accent2);transform:translateY(-3px)}
+
+  /* ===== BENTO / Coming Soon projects ===== */
+  .bento{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;max-width:1000px}
+  .box{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:1.8rem;backdrop-filter:blur(4px);transition:.35s}
+  .b-soon{grid-column:span 4;min-height:240px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
+    background:linear-gradient(150deg,rgba(255,92,138,.14),rgba(92,242,214,.06))}
+  .b-soon:hover{border-color:var(--accent);box-shadow:0 20px 50px rgba(255,92,138,.18)}
+  .b-soon .num{font-family:'DM Mono',monospace;color:var(--accent2);font-size:.78rem}
+  .b-soon h3{font-family:'Anton',sans-serif;font-size:clamp(2.6rem,7vw,4.6rem);letter-spacing:1px;text-transform:uppercase;margin:.4rem 0}
+  .b-soon p{color:var(--muted);font-family:'DM Mono',monospace;font-size:1rem;max-width:480px}
+
+  /* ===== CONTACT (deepest / space) ===== */
+  #iletisim{margin-left:var(--sb);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12vh 7vw;position:relative;z-index:3;
+    background:linear-gradient(180deg,#0a1430 0%,#05060f 60%,#000000 100%)}
+  @media(max-width:780px){#iletisim{margin-left:0}}
+  #iletisim .body{margin:0 auto 1.6rem}
+  .links{display:flex;gap:1.4rem;flex-wrap:wrap;justify-content:center}
+  .links a{color:#fff;text-decoration:none;font-family:'DM Mono',monospace;border-bottom:2px solid var(--accent);padding-bottom:3px;transition:.3s}
+  .links a:hover{color:var(--accent2);border-color:var(--accent2)}
+  footer{margin-left:var(--sb);padding:3vh 8vw;font-family:'DM Mono',monospace;color:var(--muted);font-size:.8rem;text-align:center;position:relative;z-index:9;background:#000}
+  @media(max-width:780px){footer{margin-left:0}}
+</style>
+</head>
+<body>
+<div class="progress" id="prog"></div>
+<div class="stars" id="stars"></div>
+
+<aside class="sidebar">
+  <a href="#hero" class="sb-logo">E<span>.</span>A</a>
+  <button class="sb-toggle" onclick="document.getElementById('sbnav').classList.toggle('open')">&#9776;</button>
+  <nav class="sb-nav" id="sbnav">
+    <a href="#cocukluk" data-tr="Çocukluk" data-en="Childhood">Çocukluk</a>
+    <a href="#okul" data-tr="Okul" data-en="School">Okul</a>
+    <a href="#ilgi" data-tr="Beceriler" data-en="Skills">Beceriler</a>
+    <a href="#projeler" data-tr="Projeler" data-en="Projects">Projeler</a>
+    <a href="#iletisim" data-tr="İletişim" data-en="Contact">İletişim</a>
+  </nav>
+  <div class="sb-lang">
+    <button id="btn-tr" class="active" onclick="setLang('tr')">TR</button>
+    <button id="btn-en" onclick="setLang('en')">EN</button>
+  </div>
+</aside>
+
+<div class="rocket" id="rocket">
+  <span class="trail"></span>
+  <svg width="44" height="88" viewBox="0 0 46 92" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="bodyG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c9ccd6"/><stop offset=".5" stop-color="#fff"/><stop offset="1" stop-color="#9aa0b0"/></linearGradient>
+      <radialGradient id="flameG" cx="0.5" cy="0.2" r="0.8"><stop offset="0" stop-color="#fff3c2"/><stop offset=".4" stop-color="#ffb347"/><stop offset="1" stop-color="#ff5c2e" stop-opacity="0"/></radialGradient>
+    </defs>
+    <ellipse cx="23" cy="84" rx="8" ry="14" fill="url(#flameG)"/>
+    <path d="M9 56 L2 76 L13 68 Z" fill="#ff5c8a"/>
+    <path d="M37 56 L44 76 L33 68 Z" fill="#ff5c8a"/>
+    <path d="M23 2 C33 14 36 34 36 52 L36 70 L10 70 L10 52 C10 34 13 14 23 2 Z" fill="url(#bodyG)" stroke="#7c8190" stroke-width="1"/>
+    <path d="M23 2 C28 9 31 20 32 30 L14 30 C15 20 18 9 23 2 Z" fill="#ff5c8a"/>
+    <circle cx="23" cy="42" r="6" fill="#5cf2d6" stroke="#2a8fa0" stroke-width="2"/>
+    <line x1="23" y1="48" x2="23" y2="68" stroke="#bfc4d0" stroke-width="1.5"/>
+  </svg>
+</div>
+
+<main class="main">
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-tag tag reveal" data-tr="Bilgisayar Mühendisliği Öğrencisi · NKÜ" data-en="Computer Engineering Student · NKU">Bilgisayar Mühendisliği Öğrencisi · NKÜ</div>
+    <h1 class="hero-title reveal" data-tr="ERALP<br><span>AKYÜZ</span>" data-en="ERALP<br><span>AKYÜZ</span>">ERALP<br><span>AKYÜZ</span></h1>
+    <div class="hero-meta reveal">
+      <div><div class="k" data-tr="Şehir" data-en="Based in">Şehir</div><div class="v">Kırklareli / Tekirdağ</div></div>
+      <div><div class="k" data-tr="Bölüm" data-en="Studying">Bölüm</div><div class="v" data-tr="Bilgisayar Müh. · NKÜ" data-en="Computer Eng. · NKU">Bilgisayar Müh. · NKÜ</div></div>
+      <div><div class="k" data-tr="Durum" data-en="Status">Durum</div><div class="v" data-tr="Öğreniyor" data-en="Learning">Öğreniyor</div></div>
+    </div>
+    <div class="hero-side reveal"><p data-tr="// çocukluktan bugüne, dünyadan uzaya doğru bir hikaye. aşağı kaydır." data-en="// a story from childhood to today, from earth out into space. scroll down.">// çocukluktan bugüne, dünyadan uzaya doğru bir hikaye. aşağı kaydır.</p></div>
+    <div class="scroll-hint"><span class="arrow">&#8595;</span> <span data-tr="hikayeyi başlat" data-en="start the story">hikayeyi başlat</span></div>
+  </section>
+</main>
+
+<!-- CHILDHOOD + EARTH (story begins on earth) -->
+<section class="childhood" id="cocukluk">
+  <div class="began reveal" data-tr="hikaye burada başladı" data-en="where the story began">hikaye burada başladı</div>
+  <div class="earth-hold">
+    <div class="kid">
+      <svg width="120" height="150" viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg">
+        <path d="M62 70 q30 6 44 -4 q-10 16 -40 16" fill="#ffd166" opacity="0.9"/>
+        <path d="M46 96 q-4 22 -10 30" stroke="#2f6db5" stroke-width="9" fill="none" stroke-linecap="round"/>
+        <path d="M70 96 q6 22 12 30" stroke="#2f6db5" stroke-width="9" fill="none" stroke-linecap="round"/>
+        <ellipse cx="34" cy="128" rx="7" ry="4" fill="#1c1830"/>
+        <ellipse cx="84" cy="128" rx="7" ry="4" fill="#1c1830"/>
+        <path d="M40 96 Q40 64 60 64 Q80 64 80 96 Q60 104 40 96 Z" fill="#3a7bd5"/>
+        <path d="M44 80 q-10 12 -4 22" stroke="#3a7bd5" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <circle cx="60" cy="48" r="18" fill="#f1c4a0"/>
+        <path d="M41 47 Q39 24 60 22 Q81 24 79 47 Q75 34 66 33 Q70 41 62 39 Q64 30 55 32 Q59 41 50 38 Q51 31 44 36 Q47 42 41 47 Z" fill="#ff7a18"/>
+        <path d="M42 44 Q40 30 49 27" stroke="#ff7a18" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <circle cx="54" cy="49" r="2.4" fill="#2a2540"/>
+        <circle cx="66" cy="49" r="2.4" fill="#2a2540"/>
+        <path d="M54 56 Q60 61 66 56" stroke="#c47a55" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="earth-glow"></div>
+    <svg class="earth-dome" viewBox="0 0 1000 360" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet">
+      <defs><clipPath id="dome"><path d="M40 360 C40 130 240 30 500 30 C760 30 960 130 960 360 Z"/></clipPath></defs>
+      <path d="M40 360 C40 130 240 30 500 30 C760 30 960 130 960 360 Z" fill="#3aa6d8"/>
+      <g clip-path="url(#dome)" fill="#8cc63f">
+        <path d="M150 150 q40 -30 95 -22 q40 6 30 40 q-12 36 -70 40 q-60 4 -75 -20 q-12 -22 20 -38z"/>
+        <path d="M250 250 q35 -10 50 22 q14 40 -20 70 q-30 26 -50 -6 q-18 -30 0 -60 q6 -18 20 -26z"/>
+        <path d="M470 150 q60 -26 120 -6 q20 50 -6 110 q-26 60 -70 70 q-40 8 -56 -34 q-18 -50 -10 -100 q4 -28 22 -40z"/>
+        <path d="M620 130 q120 -24 210 6 q40 30 10 80 q-50 50 -160 44 q-90 -6 -90 -68 q0 -42 30 -62z"/>
+        <path d="M700 230 q24 6 26 40 q2 30 -22 30 q-22 0 -22 -34 q0 -28 18 -36z"/>
+        <path d="M840 260 q24 -4 30 18 q4 24 -20 30 q-24 4 -28 -20 q-2 -20 18 -28z"/>
+      </g>
+    </svg>
+  </div>
+  <div class="child-top">
+    <div class="story">
+      <div class="story-text">
+        <div class="icon reveal"><svg viewBox="0 0 64 64" fill="none"><rect x="8" y="14" width="48" height="32" rx="4" stroke="#c24a82" stroke-width="3"/><rect x="4" y="50" width="56" height="6" rx="3" fill="#7a2a5a"/><circle cx="22" cy="30" r="4" fill="#e09a3a"/><path d="M38 26h10M38 32h10" stroke="#e09a3a" stroke-width="3" stroke-linecap="round"/></svg></div>
+        <div class="tag reveal" data-tr="Her şey nasıl başladı" data-en="How it all began">Her şey nasıl başladı</div>
+        <h2 class="reveal" data-tr="ÖNCE <span>OYUNLAR</span> VARDI" data-en="FIRST CAME <span>THE GAMES</span>">ÖNCE <span>OYUNLAR</span> VARDI</h2>
+        <p class="body reveal" data-tr="Bilgisayarla tanışmam <strong>oyunlarla</strong> oldu. Küçükken ekranın karşısında saatler geçirir, &quot;bu nasıl çalışıyor?&quot; diye merak ederdim. Beni asıl saran şey oyunun kendisi değil, <strong>arkasındaki sistemdi.</strong>" data-en="I met computers through <strong>games</strong>. As a kid I spent hours at the screen, wondering &quot;how does this work?&quot;. What really drew me in wasn't the game &mdash; it was <strong>the system behind it.</strong>">Bilgisayarla tanışmam <strong>oyunlarla</strong> oldu. Küçükken ekranın karşısında saatler geçirir, "bu nasıl çalışıyor?" diye merak ederdim. Beni asıl saran şey oyunun kendisi değil, <strong>arkasındaki sistemdi.</strong></p>
+      </div>
+      <div></div>
+    </div>
+  </div>
+</section>
+
+<main class="main">
+  <!-- AWAKENING -->
+  <section id="s-awaken">
+    <div class="chapter-no">02</div>
+    <div class="story flip">
+      <div class="story-text">
+        <div class="icon reveal"><svg viewBox="0 0 64 64" fill="none"><path d="M14 26c0-8 6-14 14-14M44 16l8-8M44 16c4 4 4 10 0 14l-6 6M14 44l-6 6M14 44c4 4 10 4 14 0" stroke="#5cf2d6" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="32" r="9" stroke="#ffd166" stroke-width="3"/><path d="M28 32l3 3 6-6" stroke="#ff5c8a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="tag reveal" data-tr="Merak büyüyor" data-en="Curiosity grows">Merak büyüyor</div>
+        <h2 class="reveal" data-tr="&quot;BUNU NASIL <span>YAPARIM?</span>&quot;" data-en="&quot;HOW WOULD <span>I</span> BUILD THIS?&quot;">"BUNU NASIL <span>YAPARIM?</span>"</h2>
+        <p class="body reveal" data-tr="Bir gün sadece oynamak yetmedi. Bu dünyaların nasıl kurulduğunu öğrenmek istedim. İşte o an <strong>oyuncudan yaratıcıya</strong> dönüştüm. İlk kod satırlarım hatalarla doluydu ama her hata yeni bir kapı açıyordu." data-en="One day, just playing wasn't enough. I wanted to learn how these worlds were built. That's when I turned <strong>from player into maker</strong>. My first lines of code were full of errors &mdash; but each one opened a new door.">Bir gün sadece oynamak yetmedi. Bu dünyaların nasıl kurulduğunu öğrenmek istedim. İşte o an <strong>oyuncudan yaratıcıya</strong> dönüştüm. İlk kod satırlarım hatalarla doluydu ama her hata yeni bir kapı açıyordu.</p>
+      </div>
+      <div></div>
+    </div>
+  </section>
+
+  <!-- SCHOOL -->
+  <section id="okul">
+    <div class="chapter-no">03</div>
+    <div class="story">
+      <div class="story-text">
+        <div class="icon reveal"><svg viewBox="0 0 64 64" fill="none"><path d="M32 6l4 12 12 1-9 8 3 12-10-7-10 7 3-12-9-8 12-1z" stroke="#ffd166" stroke-width="3" stroke-linejoin="round"/><path d="M12 52h40" stroke="#5cf2d6" stroke-width="3" stroke-linecap="round"/><path d="M20 52v-6M32 52v-10M44 52v-6" stroke="#ff5c8a" stroke-width="3" stroke-linecap="round"/></svg></div>
+        <div class="tag reveal" data-tr="Serüven derinleşiyor" data-en="The journey deepens">Serüven derinleşiyor</div>
+        <h2 class="reveal" data-tr="OKUL VE <span>DERİNLEŞME</span>" data-en="SCHOOL &amp; <span>GOING DEEPER</span>">OKUL VE <span>DERİNLEŞME</span></h2>
+        <p class="body reveal" data-tr="Merakım beni <strong>Bilgisayar Mühendisliği</strong>'ne getirdi; şu an Namık Kemal Üniversitesi'nde okuyorum. Bunun yanında <strong>Huawei Student Development</strong> ekosisteminde komite üyesi olarak yer aldım ve düzenlenen Python kurslarına katkı sundum; <strong>TEKNOÇMF</strong> kulübünde yazılım komitesinde aktif rol aldım. Artık sadece &quot;nasıl&quot; değil, &quot;neden&quot; sorusunun da peşindeyim." data-en="My curiosity led me to <strong>Computer Engineering</strong> at Namık Kemal University. Alongside it I took part as a committee member in the <strong>Huawei Student Development</strong> ecosystem and helped with the Python courses held there; I was also active in the software committee of the <strong>TEKNOÇMF</strong> club. These days I chase not just the &quot;how&quot; but the &quot;why&quot;.">Merakım beni <strong>Bilgisayar Mühendisliği</strong>'ne getirdi; şu an Namık Kemal Üniversitesi'nde okuyorum. Bunun yanında <strong>Huawei Student Development</strong> ekosisteminde komite üyesi olarak yer aldım ve düzenlenen Python kurslarına katkı sundum; <strong>TEKNOÇMF</strong> kulübünde yazılım komitesinde aktif rol aldım. Artık sadece "nasıl" değil, "neden" sorusunun da peşindeyim.</p>
+      </div>
+      <div></div>
+    </div>
+  </section>
+
+  <!-- SKILLS & INTERESTS with subheadings -->
+  <section id="ilgi">
+    <div class="chapter-no">04</div>
+    <div class="icon reveal"><svg viewBox="0 0 64 64" fill="none"><path d="M32 8a16 16 0 0 0-9 29c1 1 2 3 2 5h14c0-2 1-4 2-5a16 16 0 0 0-9-29z" stroke="#ffd166" stroke-width="3" stroke-linejoin="round"/><path d="M26 50h12M28 56h8" stroke="#5cf2d6" stroke-width="3" stroke-linecap="round"/></svg></div>
+    <div class="tag reveal" data-tr="Becerilerim ve ilgi alanlarım" data-en="My skills and interests">Becerilerim ve ilgi alanlarım</div>
+    <h2 class="reveal" data-tr="BECERİ &amp; <span>İLGİ ALANLARI</span>" data-en="SKILLS &amp; <span>INTERESTS</span>">BECERİ &amp; <span>İLGİ ALANLARI</span></h2>
+    <div class="skillblock">
+      <div class="skill-cat reveal">
+        <h4 data-tr="Teknik Beceriler" data-en="Technical Skills">Teknik Beceriler</h4>
+        <div class="skill-row">
+          <span class="pill">Python</span>
+          <span class="pill" data-tr="Kodlama" data-en="Coding">Kodlama</span>
+          <span class="pill" data-tr="Algoritmik Düşünme" data-en="Algorithmic Thinking">Algoritmik Düşünme</span>
+          <span class="pill" data-tr="Bilgisayar Donanımı" data-en="Computer Hardware">Bilgisayar Donanımı</span>
+        </div>
+      </div>
+      <div class="skill-cat reveal">
+        <h4 data-tr="Diller" data-en="Languages">Diller</h4>
+        <div class="skill-row">
+          <span class="pill" data-tr="Türkçe — Ana Dil" data-en="Turkish — Native">Türkçe — Ana Dil</span>
+          <span class="pill" data-tr="İngilizce — B1" data-en="English — B1">İngilizce — B1</span>
+        </div>
+      </div>
+      <div class="skill-cat reveal">
+        <h4 data-tr="İlgi Alanları" data-en="Interests">İlgi Alanları</h4>
+        <div class="skill-row">
+          <span class="pill" data-tr="Yazılım Geliştirme" data-en="Software Development">Yazılım Geliştirme</span>
+          <span class="pill" data-tr="Yapay Zeka" data-en="Artificial Intelligence">Yapay Zeka</span>
+          <span class="pill" data-tr="E-Spor" data-en="E-Sports">E-Spor</span>
+          <span class="pill" data-tr="Futbol" data-en="Football">Futbol</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS coming soon -->
+  <section id="projeler">
+    <div class="chapter-no">NOW</div>
+    <div class="icon reveal"><svg viewBox="0 0 64 64" fill="none"><path d="M40 14l10 10-22 22-10 2 2-10z" stroke="#ffd166" stroke-width="3" stroke-linejoin="round"/><path d="M36 18l10 10" stroke="#ff5c8a" stroke-width="3"/><path d="M14 52h20" stroke="#5cf2d6" stroke-width="3" stroke-linecap="round"/></svg></div>
+    <div class="tag reveal" data-tr="Bugün · Yaptıklarım" data-en="Today · What I build">Bugün · Yaptıklarım</div>
+    <h2 class="reveal"><span>PROJELERİM</span></h2>
+    <div class="bento" style="margin-top:1.6rem">
+      <div class="box b-soon reveal">
+        <div class="num">// 2026</div>
+        <h3 data-tr="ÇOK YAKINDA" data-en="COMING SOON">ÇOK YAKINDA</h3>
+        <p data-tr="Projelerim şu an hazırlanıyor. Kişisel portföyüm ve çalışmalarım yakında burada olacak." data-en="My projects are in the works. My personal portfolio and builds will be here soon.">Projelerim şu an hazırlanıyor. Kişisel portföyüm ve çalışmalarım yakında burada olacak.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- CONTACT (deep space) -->
+<section id="iletisim">
+  <div class="tag reveal" data-tr="İletişim" data-en="Contact">İletişim</div>
+  <h2 class="reveal" data-tr="<span>TANIŞALIM</span> MI?" data-en="LET'S <span>CONNECT</span>"><span>TANIŞALIM</span> MI?</h2>
+  <p class="body reveal" data-tr="Hâlâ öğreniyorum, hâlâ merak ediyorum. Bir fikrin, projen ya da sadece sohbet etmek istersen yazmaktan çekinme." data-en="Still learning, still curious. If you have an idea, a project, or just want to chat — reach out.">Hâlâ öğreniyorum, hâlâ merak ediyorum. Bir fikrin, projen ya da sadece sohbet etmek istersen yazmaktan çekinme.</p>
+  <div class="links reveal">
+    <a href="mailto:eralpakyuz@gmail.com" data-tr="E-posta" data-en="Email">E-posta</a>
+    <a href="https://github.com/eralpakyuz" target="_blank">GitHub</a>
+    <a href="https://www.linkedin.com/in/eralp-aky%C3%BCz-92354935a/" target="_blank">LinkedIn</a>
+  </div>
+</section>
+<footer><span data-tr="&copy; 2026 Eralp Akyüz · merakla kodlanmıştır" data-en="&copy; 2026 Eralp Akyüz · coded with curiosity">&copy; 2026 Eralp Akyüz · merakla kodlanmıştır</span></footer>
+
+<script>
+  var starBox=document.getElementById('stars');
+  for(var i=0;i<90;i++){var s=document.createElement('div');s.className='star';var sz=Math.random()*2+1;s.style.width=sz+'px';s.style.height=sz+'px';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.animationDelay=Math.random()*3+'s';starBox.appendChild(s);}
+  var prog=document.getElementById('prog');var starsEl=document.getElementById('stars');var rocket=document.getElementById('rocket');
+  function onScroll(){
+    var h=document.documentElement.scrollHeight-window.innerHeight;var p=Math.min(window.scrollY/h,1);
+    prog.style.width=(p*100)+'%';
+    /* stars appear as we climb into space (later half) */
+    starsEl.style.opacity=p>0.55?Math.min(1,(p-0.55)/0.2):0;
+    /* rocket climbs from bottom (earth) to top (space) */
+    var topVH=80-p*68;var tilt=-p*14;var scale=0.7+p*0.3;
+    rocket.style.top=topVH+'vh';
+    rocket.style.transform='translateX(-50%) rotate('+tilt+'deg) scale('+scale+')';
+    rocket.style.opacity=p<0.06?Math.max(0,p/0.06):1;
+  }
+  window.addEventListener('scroll',onScroll);onScroll();
+  var io=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('show')})},{threshold:.15});
+  document.querySelectorAll('.reveal').forEach(function(el,i){el.style.transitionDelay=(i%4*0.08)+'s';io.observe(el)});
+  var secs=document.querySelectorAll('section[id]');var navA=document.querySelectorAll('.sb-nav a');
+  var so=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){var id=x.target.id;navA.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+id)})}})},{threshold:.4});
+  secs.forEach(function(s){so.observe(s)});
+  document.querySelectorAll('.sb-nav a').forEach(function(a){a.addEventListener('click',function(){document.getElementById('sbnav').classList.remove('open')})});
+  function setLang(lang){
+    document.documentElement.lang=lang;
+    document.querySelectorAll('[data-'+lang+']').forEach(function(el){el.innerHTML=el.getAttribute('data-'+lang)});
+    document.getElementById('btn-tr').classList.toggle('active',lang==='tr');
+    document.getElementById('btn-en').classList.toggle('active',lang==='en');
+  }
+</script>
+</body>
+</html>
