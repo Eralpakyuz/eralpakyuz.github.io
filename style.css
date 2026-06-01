@@ -1,4 +1,4 @@
-:root{--ink:#f4f1ff;--muted:#b9b3d6;--accent:#ff5c8a;--accent2:#5cf2d6;--accent3:#ffd166;--sb:96px}
+  :root{--ink:#f4f1ff;--muted:#b9b3d6;--accent:#ff5c8a;--accent2:#5cf2d6;--accent3:#ffd166;--sb:96px}
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth;overflow-x:hidden}
   body{background:#000;color:var(--ink);font-family:'Archivo',sans-serif;line-height:1.6;position:relative}
@@ -131,3 +131,34 @@
   .links a:hover{color:var(--accent2);border-color:var(--accent2)}
   footer{margin-left:var(--sb);padding:3vh 8vw;font-family:'DM Mono',monospace;color:var(--muted);font-size:.8rem;text-align:center;position:relative;z-index:9;background:transparent}
   @media(max-width:780px){footer{margin-left:0}}
+
+  /* ===== INLINE SHOOTER GAME (on contact section) ===== */
+  #iletisim{position:relative}
+  .fun-btn{margin-top:1.8rem;background:linear-gradient(135deg,var(--accent),var(--accent3));color:#08081a;
+    border:none;border-radius:50px;padding:.8rem 1.8rem;font-family:'DM Mono',monospace;font-weight:500;
+    font-size:.95rem;cursor:pointer;box-shadow:0 8px 24px rgba(255,92,138,.35);transition:.2s}
+  .fun-btn:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(255,92,138,.45)}
+  .fun-btn:active{transform:translateY(0)}
+  .fun-btn.hide{display:none}
+  .game-hint{margin-top:1rem;font-family:'DM Mono',monospace;color:var(--accent2);font-size:.82rem;
+    letter-spacing:1px;opacity:0;height:0;transition:opacity .3s}
+  .game-hint.show{opacity:1;height:auto}
+  /* the words become shootable targets */
+  .tword{display:inline-block;transition:opacity .25s,transform .25s,color .2s;will-change:transform}
+  #iletisim.playing .tword{cursor:crosshair}
+  #iletisim.playing .tword:not(.dead){color:#fff;text-shadow:0 0 10px rgba(92,242,214,.4)}
+  .tword.dead{opacity:0;transform:scale(1.7) rotate(10deg)}
+  /* shooter rocket */
+  .shooter{position:fixed;left:50%;bottom:8vh;transform:translateX(-50%);z-index:70;display:none;
+    filter:drop-shadow(0 0 12px rgba(255,180,120,.5));will-change:left,transform}
+  .shooter.active{display:block}
+  .shooter.launch{transition:transform 1.1s cubic-bezier(.5,-0.4,.6,.2);transform:translate(-50%,-160vh) scale(.35)}
+  .bullet{position:fixed;width:5px;height:16px;border-radius:3px;background:linear-gradient(180deg,#fff,#5cf2d6);
+    box-shadow:0 0 8px 2px rgba(92,242,214,.6);z-index:69}
+  .boom{position:fixed;z-index:71;font-size:1.5rem;animation:boom .45s ease-out forwards;pointer-events:none}
+  @keyframes boom{0%{opacity:1;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(2)}}
+  .game-done{position:fixed;left:0;right:0;bottom:18vh;text-align:center;z-index:72;display:none;
+    font-family:'Anton',sans-serif;font-size:clamp(1.4rem,4vw,2.4rem);color:var(--accent3);
+    text-shadow:0 0 20px rgba(255,209,102,.4);pointer-events:none}
+  .game-done.show{display:block;animation:popin .5s ease-out}
+  @keyframes popin{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:none}}

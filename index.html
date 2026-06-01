@@ -122,7 +122,7 @@
         <div class="icon reveal"><svg viewBox="0 0 64 64" fill="none"><path d="M32 6l4 12 12 1-9 8 3 12-10-7-10 7 3-12-9-8 12-1z" stroke="#ffd166" stroke-width="3" stroke-linejoin="round"/><path d="M12 52h40" stroke="#5cf2d6" stroke-width="3" stroke-linecap="round"/><path d="M20 52v-6M32 52v-10M44 52v-6" stroke="#ff5c8a" stroke-width="3" stroke-linecap="round"/></svg></div>
         <div class="tag reveal" data-tr="Serüven derinleşiyor" data-en="The journey deepens">Serüven derinleşiyor</div>
         <h2 class="reveal" data-tr="OKUL VE <span>DERİNLEŞME</span>" data-en="SCHOOL &amp; <span>GOING DEEPER</span>">OKUL VE <span>DERİNLEŞME</span></h2>
-        <p class="body reveal" data-tr="Merakım beni <strong>Bilgisayar Mühendisliği</strong>'ne getirdi; şu an Namık Kemal Üniversitesi'nde okuyorum. Bunun yanında <strong>Huawei Student Developers</strong> ekosisteminde komite üyesi olarak yer aldım ve düzenlenen Python kurslarına katkı sundum; <strong>TEKNOÇMF</strong> kulübünde yazılım komitesinde aktif rol aldım. Artık sadece &quot;nasıl&quot; değil, &quot;neden&quot; sorusunun da peşindeyim." data-en="My curiosity led me to <strong>Computer Engineering</strong> at Namık Kemal University. Alongside it I took part as a committee member in the <strong>Huawei Student Developers</strong> ecosystem and helped with the Python courses held there; I was also active in the software committee of the <strong>TEKNOÇMF</strong> club. These days I chase not just the &quot;how&quot; but the &quot;why&quot;.">Merakım beni <strong>Bilgisayar Mühendisliği</strong>'ne getirdi; şu an Namık Kemal Üniversitesi'nde okuyorum. Bunun yanında <strong>Huawei Student Developers</strong> ekosisteminde komite üyesi olarak yer aldım ve düzenlenen Python kurslarına katkı sundum; <strong>TEKNOÇMF</strong> kulübünde yazılım komitesinde aktif rol aldım. Artık sadece "nasıl" değil, "neden" sorusunun da peşindeyim.</p>
+        <p class="body reveal" data-tr="Merakım beni <strong>Bilgisayar Mühendisliği</strong>'ne getirdi; şu an Namık Kemal Üniversitesi'nde okuyorum. Bunun yanında <strong>Huawei Student Developer</strong> ekosisteminde komite üyesi olarak yer aldım ve düzenlenen Python kurslarına katkı sundum; <strong>TEKNOÇMF</strong> kulübünde yazılım komitesinde aktif rol aldım. Artık sadece &quot;nasıl&quot; değil, &quot;neden&quot; sorusunun da peşindeyim." data-en="My curiosity led me to <strong>Computer Engineering</strong> at Namık Kemal University. Alongside it I took part as a committee member in the <strong>Huawei Student Developer</strong> ecosystem and helped with the Python courses held there; I was also active in the software committee of the <strong>TEKNOÇMF</strong> club. These days I chase not just the &quot;how&quot; but the &quot;why&quot;.">Merakım beni <strong>Bilgisayar Mühendisliği</strong>'ne getirdi; şu an Namık Kemal Üniversitesi'nde okuyorum. Bunun yanında <strong>Huawei Student Developer</strong> ekosisteminde komite üyesi olarak yer aldım ve düzenlenen Python kurslarına katkı sundum; <strong>TEKNOÇMF</strong> kulübünde yazılım komitesinde aktif rol aldım. Artık sadece "nasıl" değil, "neden" sorusunun da peşindeyim.</p>
       </div>
       <div></div>
     </div>
@@ -177,19 +177,33 @@
   </section>
 </main>
 
-<!-- CONTACT deep space -->
+<!-- CONTACT deep space (with inline shooter game) -->
 <section class="panel" id="iletisim" style="margin-left:var(--sb)">
   <div class="tag reveal" data-tr="İletişim" data-en="Contact">İletişim</div>
   <h2 class="reveal" data-tr="<span>TANIŞALIM</span> MI?" data-en="LET'S <span>CONNECT</span>"><span>TANIŞALIM</span> MI?</h2>
-  <p class="body reveal" data-tr="Hâlâ öğreniyorum, hâlâ merak ediyorum. Bir fikrin, projen ya da sadece sohbet etmek istersen yazmaktan çekinme." data-en="Still learning, still curious. If you have an idea, a project, or just want to chat — reach out.">Hâlâ öğreniyorum, hâlâ merak ediyorum. Bir fikrin, projen ya da sadece sohbet etmek istersen yazmaktan çekinme.</p>
+  <p class="body reveal" id="targetText">
+    <span class="tword">Hâlâ</span> <span class="tword">öğreniyorum,</span> <span class="tword">hâlâ</span> <span class="tword">merak</span> <span class="tword">ediyorum.</span> <span class="tword">Bir</span> <span class="tword">fikrin,</span> <span class="tword">projen</span> <span class="tword">ya</span> <span class="tword">da</span> <span class="tword">sadece</span> <span class="tword">sohbet</span> <span class="tword">etmek</span> <span class="tword">istersen</span> <span class="tword">yazmaktan</span> <span class="tword">çekinme.</span>
+  </p>
   <div class="links reveal">
     <a href="mailto:eralpakyuz@gmail.com" data-tr="E-posta" data-en="Email">E-posta</a>
     <a href="https://github.com/eralpakyuz" target="_blank">GitHub</a>
     <a href="https://www.linkedin.com/in/eralp-aky%C3%BCz-92354935a/" target="_blank">LinkedIn</a>
   </div>
+  <button class="fun-btn reveal" id="funBtn" type="button" data-tr="🚀 biraz da eğlenceye var mısın?" data-en="🚀 up for a little fun?">🚀 biraz da eğlenceye var mısın?</button>
+  <div class="game-hint" id="gameHint" data-tr="← → hareket · boşluk/dokun ateş · yazıyı yok et!" data-en="← → move · space/tap to fire · destroy the text!"></div>
+
+  <!-- the shooter rocket appears here when the game starts -->
+  <div class="shooter" id="gun">
+    <svg width="34" height="68" viewBox="0 0 46 92" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9 56 L2 76 L13 68 Z" fill="#ff5c8a"/>
+      <path d="M37 56 L44 76 L33 68 Z" fill="#ff5c8a"/>
+      <path d="M23 2 C33 14 36 34 36 52 L36 70 L10 70 L10 52 C10 34 13 14 23 2 Z" fill="#e9ecf2" stroke="#7c8190" stroke-width="1"/>
+      <path d="M23 2 C28 9 31 20 32 30 L14 30 C15 20 18 9 23 2 Z" fill="#ff5c8a"/>
+      <circle cx="23" cy="42" r="6" fill="#5cf2d6" stroke="#2a8fa0" stroke-width="2"/>
+    </svg>
+  </div>
 </section>
 <footer><span data-tr="&copy; 2026 Eralp Akyüz" data-en="&copy; 2026 Eralp Akyüz">&copy; 2026 Eralp Akyüz</span></footer>
-
 <script src="script.js"></script>
 </body>
 </html>

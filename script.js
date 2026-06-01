@@ -1,4 +1,4 @@
-var starBox=document.getElementById('stars');
+  var starBox=document.getElementById('stars');
   for(var i=0;i<200;i++){var s=document.createElement('div');s.className='star';var sz=Math.random()*2.4+0.8;if(sz>2.4)s.className+=' big';s.style.width=sz+'px';s.style.height=sz+'px';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';s.style.animationDelay=Math.random()*3+'s';s.style.animationDuration=(2+Math.random()*3)+'s';starBox.appendChild(s);}
 
   var prog=document.getElementById('prog');var starsEl=document.getElementById('stars');var rocket=document.getElementById('rocket');
@@ -106,7 +106,13 @@ var starBox=document.getElementById('stars');
       tgt.scale=0.98-b*0.28;
       tgt.left=fleeTarget(tgt.top);
       tgt.tilt=180;              /* pointing straight down */
-      tgt.op=p>0.94?Math.max(0,1-(p-0.94)*16):1;
+      tgt.op=p>0.9?Math.max(0,1-(p-0.9)*18):1;
+    }
+    /* always hide the scroll-rocket once the game stage is on screen */
+    var gameEl=document.getElementById('stage');
+    if(gameEl){
+      var gr=gameEl.getBoundingClientRect();
+      if(gr.top<window.innerHeight*0.9){tgt.op=0;}
     }
   }
 
@@ -149,3 +155,128 @@ var starBox=document.getElementById('stars');
     document.getElementById('btn-tr').classList.toggle('active',lang==='tr');
     document.getElementById('btn-en').classList.toggle('active',lang==='en');
   }
+
+/* ============ INLINE SHOOTER: shoot the contact paragraph ============ */
+(function(){
+  var sec=document.getElementById('iletisim');
+  var funBtn=document.getElementById('funBtn');
+  var hint=document.getElementById('gameHint');
+  var gun=document.getElementById('gun');
+  var targetText=document.getElementById('targetText');
+  if(!sec||!funBtn||!gun||!targetText)return;
+
+  var twords=[].slice.call(targetText.querySelectorAll('.tword'));
+  var playing=false, won=false, gunX=0.5, keys={}, bullets=[], raf=null, doneEl=null;
+
+  function gunY(){ return window.innerHeight*0.92; }   /* near bottom */
+  function placeGun(){ gun.style.left=(gunX*window.innerWidth)+'px'; }
+
+  function start(){
+    if(playing)return; playing=true; won=false;
+    funBtn.classList.add('hide');
+    hint.classList.add('show');
+    sec.classList.add('playing');
+    gun.classList.add('active');
+    gunX=0.5; placeGun();
+    // hide the main scroll-rocket so only the shooter shows
+    var mr=document.getElementById('rocket'); if(mr)mr.style.opacity=0;
+    raf=requestAnimationFrame(loop);
+  }
+
+  function fire(){
+    if(!playing||won)return;
+    var b=document.createElement('div');b.className='bullet';
+    var bx=gunX*window.innerWidth, by=gunY()-30;
+    b.style.left=(bx-2.5)+'px'; b.style.top=by+'px';
+    document.body.appendChild(b);
+    bullets.push({el:b,x:bx,y:by});
+    gun.style.transform='translateX(-50%) translateY(3px)';
+    setTimeout(function(){gun.style.transform='translateX(-50%)';},70);
+  }
+
+  function boom(x,y){
+    var e=document.createElement('div');e.className='boom';e.textContent='💥';
+    e.style.left=x+'px';e.style.top=y+'px';
+    document.body.appendChild(e);setTimeout(function(){e.remove();},450);
+  }
+
+  function aliveWords(){ return twords.filter(function(w){return !w.classList.contains('dead');}); }
+
+  function loop(){
+    if(keys.left)gunX=Math.max(0.03,gunX-0.013);
+    if(keys.right)gunX=Math.min(0.97,gunX+0.013);
+    placeGun();
+    for(var i=bullets.length-1;i>=0;i--){
+      var b=bullets[i]; b.y-=10; b.el.style.top=b.y+'px';
+      var hitOrGone=false;
+      var alive=aliveWords();
+      for(var j=0;j<alive.length;j++){
+        var r=alive[j].getBoundingClientRect();
+        if(b.x>=r.left && b.x<=r.right && b.y<=r.bottom && b.y>=r.top){
+          alive[j].classList.add('dead');
+          boom(b.x,b.y);
+          hitOrGone=true;
+          checkWin();
+          break;
+        }
+      }
+      if(hitOrGone || b.y<-20){ b.el.remove(); bullets.splice(i,1); }
+    }
+    raf=requestAnimationFrame(loop);
+  }
+
+  function checkWin(){
+    if(aliveWords().length===0 && !won){
+      won=true;
+      setTimeout(function(){
+        gun.classList.add('launch');           /* shooter blasts back up to the top */
+        doneEl=document.createElement('div');
+        doneEl.className='game-done';
+        doneEl.textContent='Görev tamam! 🚀';
+        document.body.appendChild(doneEl);
+        requestAnimationFrame(function(){doneEl.classList.add('show');});
+        setTimeout(function(){
+          window.scrollTo({top:0,behavior:'smooth'});
+          setTimeout(reset,900);
+        },1300);
+      },200);
+    }
+  }
+
+  function reset(){
+    playing=false; won=false;
+    cancelAnimationFrame(raf);
+    bullets.forEach(function(b){b.el.remove();}); bullets=[];
+    if(doneEl){doneEl.remove();doneEl=null;}
+    gun.classList.remove('active','launch');
+    sec.classList.remove('playing');
+    hint.classList.remove('show');
+    funBtn.classList.remove('hide');
+    twords.forEach(function(w){w.classList.remove('dead');});
+  }
+
+  funBtn.addEventListener('click',function(){
+    // make sure the section is in view, then start
+    sec.scrollIntoView({behavior:'smooth',block:'center'});
+    setTimeout(start,300);
+  });
+
+  document.addEventListener('keydown',function(ev){
+    if(!playing)return;
+    if(ev.key==='ArrowLeft'){keys.left=true;}
+    if(ev.key==='ArrowRight'){keys.right=true;}
+    if(ev.key===' '||ev.code==='Space'){ev.preventDefault();fire();}
+  });
+  document.addEventListener('keyup',function(ev){
+    if(ev.key==='ArrowLeft')keys.left=false;
+    if(ev.key==='ArrowRight')keys.right=false;
+  });
+  // tap/click anywhere while playing = move gun there + fire
+  document.addEventListener('pointerdown',function(ev){
+    if(!playing||won)return;
+    if(ev.target===funBtn)return;
+    gunX=Math.max(0.03,Math.min(0.97,ev.clientX/window.innerWidth));
+    placeGun(); fire();
+  });
+  window.addEventListener('resize',placeGun);
+})();
