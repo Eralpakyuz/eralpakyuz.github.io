@@ -18,81 +18,91 @@ var starBox=document.getElementById('stars');
     var total=horiz.offsetHeight-window.innerHeight;   /* scroll distance inside .horiz */
     var rect=horiz.getBoundingClientRect();
     var passed=Math.min(Math.max(-rect.top,0),total);  /* clamp 0..total */
-    var hx=Math.min(passed/(total*0.6),1);             /* finish slide in first 60% */
-    /* pin the panel to the viewport by translating it down as we scroll through .horiz */
+    var hx=Math.min(passed/(total*0.92),1);            /* 0..1 across all 3 panels */
     hsticky.style.transform='translateY('+passed+'px)';
-    /* slide the two-panel track sideways: 0 -> -100vw (second panel into view) */
-    htrack.style.transform='translateX(-'+(hx*100)+'vw)';
+    /* 3 panels: hero -> story begins -> first games. slide 0 -> -200vw */
+    htrack.style.transform='translateX(-'+(hx*200)+'vw)';
   }
 
-  /* each story section + the rocket's escape X for that section (opposite its text) */
-  var LEFT_X=22, RIGHT_X=84;   /* rocket parking spots (vw %) */
-  var zones=[
-    {el:document.getElementById('s-awaken'),   fleeX:RIGHT_X},  /* text left  -> rocket right */
-    {el:document.getElementById('s-school'),   fleeX:LEFT_X},   /* text right -> rocket left  */
-    {el:document.getElementById('s-skills'),   fleeX:LEFT_X},   /* text right -> rocket left  */
-    {el:document.getElementById('s-projects'), fleeX:RIGHT_X}   /* text left  -> rocket right */
-  ];
+  /* expose horizontal progress for rocket choreography */
+  function horizProgress(){
+    var total=horiz.offsetHeight-window.innerHeight;
+    var rect=horiz.getBoundingClientRect();
+    var passed=Math.min(Math.max(-rect.top,0),total);
+    return passed/total;
+  }
 
-  /* blend each zone's escape position by how close its centre is to the viewport
-     centre. as one section hands off to the next, the target glides continuously
-     instead of snapping -> the rocket genuinely dodges away from the text. */
-  function fleeTarget(){
-    var vc=window.innerHeight/2, vh=window.innerHeight;
-    var sumW=0, sumX=0;
-    for(var i=0;i<zones.length;i++){
-      if(!zones[i].el)continue;
-      var r=zones[i].el.getBoundingClientRect();
+  /* gather the actual on-screen text blocks; rocket flees to the opposite horizontal side */
+  var LEFT_X=20, RIGHT_X=86;
+  var textBlocks=[];
+  function collectBlocks(){
+    textBlocks=[];
+    var nodes=document.querySelectorAll('#s-awaken .story,#s-school .story,#s-skills .skillblock,#s-projects .b-soon,#iletisim .body');
+    for(var i=0;i<nodes.length;i++)textBlocks.push(nodes[i]);
+  }
+
+  /* find the text block nearest the rocket's current screen Y, return the X to flee to */
+  function fleeTarget(rocketTopVH){
+    var ry=rocketTopVH/100*window.innerHeight;   /* rocket Y in px */
+    var vw=window.innerWidth, best=null, bestD=1e9;
+    for(var i=0;i<textBlocks.length;i++){
+      var r=textBlocks[i].getBoundingClientRect();
       var c=r.top+r.height/2;
-      var dist=Math.abs(c-vc)/vh;          /* 0 = dead centre */
-      var w=Math.max(0,1-dist);            /* triangular falloff */
-      w=w*w;                               /* sharpen a touch */
-      sumW+=w; sumX+=w*zones[i].fleeX;
+      var d=Math.abs(c-ry);
+      if(d<bestD){bestD=d;best=r;}
     }
-    if(sumW<0.001)return 53;               /* between zones: drift to mid */
-    return sumX/sumW;
+    if(!best)return 53;
+    /* only react when the block is reasonably near the rocket vertically */
+    var influence=Math.max(0,1-bestD/(window.innerHeight*0.7));
+    var blockCenterX=(best.left+best.right)/2;
+    /* if text is on the left half -> flee right; else flee left */
+    var target=(blockCenterX < vw/2)?RIGHT_X:LEFT_X;
+    /* blend between mid (53) and full flee by influence so it eases in/out */
+    return 53+(target-53)*influence;
   }
 
   function compute(){
     var h=document.documentElement.scrollHeight-window.innerHeight;
     var p=Math.min(window.scrollY/h,1);
     prog.style.width=(p*100)+'%';
-    starsEl.style.opacity=p>0.42?Math.min(1,(p-0.42)/0.22):0;
+    starsEl.style.opacity=p>0.45?Math.min(1,(p-0.45)/0.22):0;
 
-    if(p<0.07){
-      /* LAUNCH: shoots up and to the right, nose UP */
-      var a=p/0.07;
-      tgt.top=50-a*34;tgt.left=78+a*5;tgt.scale=1+a*0.18;tgt.tilt=a*12;tgt.op=1;
+    var hp=isMobile()?1:horizProgress();   /* 0..1 within the horizontal section */
+    var rect=horiz.getBoundingClientRect();
+    var horizDone=rect.bottom<=window.innerHeight+2;  /* horizontal section fully passed */
+
+    if(!horizDone && !isMobile()){
+      /* HORIZONTAL PHASE: rocket lifts off and rises as the panels slide right, nose up */
+      tgt.top=58-hp*40;          /* 58 -> 18vh : climbing */
+      tgt.left=72+hp*8;          /* drifts to the right edge with the motion */
+      tgt.scale=1+hp*0.15;
+      tgt.tilt=hp*10;            /* nose roughly up, slight lean */
+      tgt.op=1;
     }else{
-      /* DESCENT: flip nose-down, ride down the page, continuously flee the text */
-      var b=(p-0.07)/0.93;
-      tgt.top=16+b*74;
-      tgt.scale=1.18-b*0.5;
-      var fx=fleeTarget();
-      tgt.left=fx;
-      var flip=Math.min(b/0.18,1);
-      /* bank toward whichever way it's currently sliding (computed in animate) */
-      tgt.tilt=12+flip*168;
-      tgt.op=p>0.93?Math.max(0,1-(p-0.93)*15):1;
+      /* VERTICAL PHASE: flip nose-down, descend, and flee the text blocks */
+      var b=Math.min(Math.max((p-0.30)/0.70,0),1);
+      tgt.top=18+b*72;
+      tgt.scale=1.15-b*0.45;
+      tgt.left=fleeTarget(tgt.top);
+      tgt.tilt=180;              /* pointing down */
+      tgt.op=p>0.94?Math.max(0,1-(p-0.94)*16):1;
     }
   }
 
   function onScroll(){updateTrack();compute();}
   window.addEventListener('scroll',onScroll,{passive:true});
-  window.addEventListener('resize',onScroll);
+  window.addEventListener('resize',function(){collectBlocks();onScroll();});
 
   /* rocket-only smoothing loop */
-  var prevLeft=null;
   function animate(){
     var e=0.12;
     cur.top=lerp(cur.top,tgt.top,e);
     var beforeLeft=cur.left;
-    cur.left=lerp(cur.left,tgt.left,0.05);   /* slow, graceful horizontal glide */
+    cur.left=lerp(cur.left,tgt.left,0.1);    /* quick enough to actually dodge the text */
     cur.scale=lerp(cur.scale,tgt.scale,e);
-    /* bank: lean into the direction of horizontal travel */
-    var vx=cur.left-beforeLeft;              /* +right / -left */
-    var bank=Math.max(-22,Math.min(22,vx*9));
-    cur.tilt=lerp(cur.tilt,tgt.tilt+bank,0.08);
+    var vx=cur.left-beforeLeft;
+    var bank=Math.max(-24,Math.min(24,vx*10));
+    cur.tilt=lerp(cur.tilt,tgt.tilt+bank,0.1);
     cur.op=lerp(cur.op,tgt.op,e);
     rocket.style.top=cur.top+'vh';
     rocket.style.left=cur.left+'%';
@@ -100,7 +110,8 @@ var starBox=document.getElementById('stars');
     rocket.style.opacity=cur.op;
     requestAnimationFrame(animate);
   }
-  compute();updateTrack();cur=JSON.parse(JSON.stringify(tgt));requestAnimationFrame(animate);
+  collectBlocks();compute();updateTrack();cur=JSON.parse(JSON.stringify(tgt));requestAnimationFrame(animate);
+  window.addEventListener('load',collectBlocks);
 
   var io=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('show')})},{threshold:.15});
   document.querySelectorAll('.reveal').forEach(function(el,i){el.style.transitionDelay=(i%4*0.08)+'s';io.observe(el)});
