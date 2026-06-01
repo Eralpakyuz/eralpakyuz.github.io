@@ -153,6 +153,7 @@
     filter:drop-shadow(0 0 12px rgba(255,180,120,.5));will-change:left,transform}
   .shooter.active{display:block}
   .shooter.launch{transition:transform 1.1s cubic-bezier(.5,-0.4,.6,.2);transform:translate(-50%,-160vh) scale(.35)}
+  .shooter.launch-m{transition:transform .9s ease-in, opacity .9s ease-in;transform:translate(-50%,-70vh) scale(.45);opacity:0}
   .bullet{position:fixed;width:5px;height:16px;border-radius:3px;background:linear-gradient(180deg,#fff,#5cf2d6);
     box-shadow:0 0 8px 2px rgba(92,242,214,.6);z-index:69}
   .boom{position:fixed;z-index:71;font-size:1.5rem;animation:boom .45s ease-out forwards;pointer-events:none}

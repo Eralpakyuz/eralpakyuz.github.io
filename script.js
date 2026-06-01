@@ -228,8 +228,9 @@
   function checkWin(){
     if(aliveWords().length===0 && !won){
       won=true;
+      var mob=window.innerWidth<=780;
       setTimeout(function(){
-        gun.classList.add('launch');           /* shooter blasts back up to the top */
+        gun.classList.add(mob?'launch-m':'launch');  /* gentler launch on mobile */
         doneEl=document.createElement('div');
         doneEl.className='game-done';
         doneEl.textContent='Görev tamam! 🚀';
@@ -238,7 +239,7 @@
         setTimeout(function(){
           window.scrollTo({top:0,behavior:'smooth'});
           setTimeout(reset,900);
-        },1300);
+        }, mob?1100:1300);
       },200);
     }
   }
@@ -248,7 +249,7 @@
     cancelAnimationFrame(raf);
     bullets.forEach(function(b){b.el.remove();}); bullets=[];
     if(doneEl){doneEl.remove();doneEl=null;}
-    gun.classList.remove('active','launch');
+    gun.classList.remove('active','launch','launch-m');
     sec.classList.remove('playing');
     hint.classList.remove('show');
     funBtn.classList.remove('hide');
