@@ -68,7 +68,7 @@
   .chapter-no{position:absolute;top:7vh;right:6vw;font-family:'Anton',sans-serif;color:rgba(255,255,255,.07);font-size:clamp(5rem,13vw,11rem);line-height:1;z-index:0}
 
   /* HERO */
-  #hero{display:flex;align-items:flex-start;text-align:center;overflow:hidden;padding-top:18vh}
+  #hero{align-items:center;text-align:center;overflow:hidden}
   #hero .hero-inner{position:relative;z-index:4;width:100%;display:flex;flex-direction:column;align-items:center}
   #hero .tag{color:#1a4a7a}
   .hero-title{font-family:'Anton',sans-serif;font-size:clamp(3.6rem,15vw,11rem);line-height:1.02;letter-spacing:1px;text-transform:uppercase;color:#0a2a4a}
@@ -81,18 +81,16 @@
   .hero-earth{position:absolute;bottom:-64vw;left:50%;transform:translateX(-50%);width:120vw;max-width:1500px;z-index:1;pointer-events:none}
   .hero-earth-glow{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120vw;max-width:1500px;height:30vw;background:radial-gradient(ellipse at center bottom,rgba(120,200,255,.5),transparent 70%);z-index:0;pointer-events:none}
 
-  /* HORIZONTAL FIRST TRANSITION (transform-pinned: no fixed/sticky, iframe-safe) */
-  .horiz{position:relative;height:240vh;background:transparent;z-index:3;overflow:hidden}
+  /* HORIZONTAL FIRST TRANSITION (transform-pinned: hero + 2 story panels slide right) */
+  .horiz{position:relative;height:340vh;background:transparent;z-index:3;overflow:hidden}
   .horiz-sticky{position:absolute;top:0;left:0;height:100vh;width:100vw;overflow:hidden;backface-visibility:hidden;will-change:transform}
-  .horiz-track{display:flex;width:200vw;height:100%;will-change:transform;backface-visibility:hidden}
+  .horiz-track{display:flex;width:300vw;height:100%;will-change:transform;backface-visibility:hidden}
   .hpane{width:100vw;height:100vh;flex:0 0 100vw;display:flex;flex-direction:column;justify-content:center;padding:10vh 7vw 10vh calc(7vw + var(--sb));position:relative}
-  .hpane.p1{background:transparent}
-  .hpane.p2{background:transparent}
+  .hpane.p0,.hpane.p1,.hpane.p2{background:transparent}
   .hpane .hint{position:absolute;bottom:6vh;font-family:'DM Mono',monospace;color:#2a4a66;font-size:.8rem}
   .hpane.p1 .hint{right:7vw}
   .story{max-width:600px}
   @media(max-width:780px){
-    /* on mobile, collapse horizontal to normal vertical */
     .horiz{height:auto;overflow:visible}
     .horiz-sticky{position:static;height:auto;width:100%;transform:none!important}
     .horiz-track{flex-direction:column;width:100%;transform:none!important}
