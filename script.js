@@ -18,10 +18,20 @@ var starBox=document.getElementById('stars');
     var total=horiz.offsetHeight-window.innerHeight;   /* scroll distance inside .horiz */
     var rect=horiz.getBoundingClientRect();
     var passed=Math.min(Math.max(-rect.top,0),total);  /* clamp 0..total */
-    var hx=Math.min(passed/(total*0.92),1);            /* 0..1 across all 3 panels */
+    var hx=Math.min(passed/(total*0.92),1);            /* 0..1 across the whole sequence */
     hsticky.style.transform='translateY('+passed+'px)';
-    /* 3 panels: hero -> story begins -> first games. slide 0 -> -200vw */
-    htrack.style.transform='translateX(-'+(hx*200)+'vw)';
+
+    /* hx 0..0.5  : hero -> "HİKAYE BAŞLIYOR"  (pure right, X 0 -> -100vw)
+       hx 0.5..1  : "BAŞLIYOR" -> "OYUNLAR"    (DIAGONAL: continue right AND drop down) */
+    var x, y=0;
+    if(hx<=0.5){
+      x=(hx/0.5)*100;                 /* 0 -> 100  (=> -100vw) */
+    }else{
+      var d=(hx-0.5)/0.5;             /* 0..1 over the diagonal leg */
+      x=100+d*100;                    /* 100 -> 200 (=> -200vw) */
+      y=d*40;                         /* slide track DOWN up to 40vh => diagonal feel */
+    }
+    htrack.style.transform='translate3d(-'+x+'vw,-'+y+'vh,0)';
   }
 
   /* expose horizontal progress for rocket choreography */
@@ -72,19 +82,30 @@ var starBox=document.getElementById('stars');
     var horizDone=rect.bottom<=window.innerHeight+2;  /* horizontal section fully passed */
 
     if(!horizDone && !isMobile()){
-      /* HORIZONTAL PHASE: rocket lifts off and rises as the panels slide right, nose up */
-      tgt.top=58-hp*40;          /* 58 -> 18vh : climbing */
-      tgt.left=72+hp*8;          /* drifts to the right edge with the motion */
-      tgt.scale=1+hp*0.15;
-      tgt.tilt=hp*10;            /* nose roughly up, slight lean */
-      tgt.op=1;
+      if(hp<=0.5){
+        /* LEG 1 (pure right): rocket lifts off and climbs, nose up-right */
+        var a=hp/0.5;
+        tgt.top=60-a*36;         /* 60 -> 24vh climbing */
+        tgt.left=64+a*18;        /* 64 -> 82 : moves right with the slide */
+        tgt.scale=1+a*0.16;
+        tgt.tilt=a*45;           /* 0 -> 45deg : nose tipping toward down-right */
+        tgt.op=1;
+      }else{
+        /* LEG 2 (diagonal down-right): rocket DIVES toward the corner like it's plunging */
+        var d=(hp-0.5)/0.5;
+        tgt.top=24+d*60;         /* 24 -> 84vh : drops down */
+        tgt.left=82-d*4;         /* stays on the right side */
+        tgt.scale=1.16-d*0.2;
+        tgt.tilt=45+d*90;        /* 45 -> 135deg : full diagonal nose-down-right dive */
+        tgt.op=1;
+      }
     }else{
-      /* VERTICAL PHASE: flip nose-down, descend, and flee the text blocks */
-      var b=Math.min(Math.max((p-0.30)/0.70,0),1);
-      tgt.top=18+b*72;
-      tgt.scale=1.15-b*0.45;
+      /* VERTICAL PHASE: nose-down, descend, and flee the text blocks */
+      var b=Math.min(Math.max((p-0.34)/0.66,0),1);
+      tgt.top=20+b*70;
+      tgt.scale=0.98-b*0.28;
       tgt.left=fleeTarget(tgt.top);
-      tgt.tilt=180;              /* pointing down */
+      tgt.tilt=180;              /* pointing straight down */
       tgt.op=p>0.94?Math.max(0,1-(p-0.94)*16):1;
     }
   }
