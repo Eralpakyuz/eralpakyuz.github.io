@@ -82,11 +82,12 @@
   .hero-earth-glow{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120vw;max-width:1500px;height:30vw;background:radial-gradient(ellipse at center bottom,rgba(120,200,255,.5),transparent 70%);z-index:0;pointer-events:none}
 
   /* HORIZONTAL FIRST TRANSITION (transform-pinned: hero + 2 story panels slide right) */
-  .horiz{position:relative;height:340vh;background:transparent;z-index:3;overflow:hidden}
+  .horiz{position:relative;height:420vh;background:transparent;z-index:3;overflow:hidden}
   .horiz-sticky{position:absolute;top:0;left:0;height:100vh;width:100vw;overflow:hidden;backface-visibility:hidden;will-change:transform}
   .horiz-track{display:flex;width:300vw;height:100%;will-change:transform;backface-visibility:hidden}
   .hpane{width:100vw;height:100vh;flex:0 0 100vw;display:flex;flex-direction:column;justify-content:center;padding:10vh 7vw 10vh calc(7vw + var(--sb));position:relative}
   .hpane.p0,.hpane.p1,.hpane.p2{background:transparent}
+  .hpane.p2{position:relative;top:40vh}   /* pre-offset down; diagonal slide brings it to centre */
   .hpane .hint{position:absolute;bottom:6vh;font-family:'DM Mono',monospace;color:#2a4a66;font-size:.8rem}
   .hpane.p1 .hint{right:7vw}
   .story{max-width:600px}
